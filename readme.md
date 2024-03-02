@@ -1,7 +1,9 @@
+It looks like there might be an indentation issue in your Markdown. Here's a corrected version:
+
 ```markdown
 ## App Details
 
-- Simple CRM application where employees can login, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
+- Simple CRM application where employees can log in, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
 
 ## Project Details
 
