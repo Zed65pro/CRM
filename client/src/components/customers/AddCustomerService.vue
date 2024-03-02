@@ -1,6 +1,6 @@
 <!-- AddService.vue -->
 <template>
-  <div class="container">
+  <div class="container" style="max-width: 450px">
     <!-- Dropdown menu to select a service -->
     <div class="mb-3">
       <label for="serviceSelect" class="form-label">Select a Service</label>
@@ -84,6 +84,9 @@ export default {
         this.fetchCustomerDetails(this.$route.params.id);
         // Optionally, redirect to the customer detail page or perform other actions
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error adding service to customer:", error);
       }
       this.$store.commit("setIsLoading", false);
