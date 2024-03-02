@@ -1,5 +1,3 @@
-It looks like there might be an indentation issue in your Markdown. Here's a corrected version:
-
 ```markdown
 ## App Details
 
@@ -15,7 +13,7 @@ It looks like there might be an indentation issue in your Markdown. Here's a cor
 - Bootstrap 5.3.3
 - axios 1.6.7
 
-### Vue Project Setup
+## Vue Project Setup
 
 - cd into the directory
 
@@ -36,7 +34,7 @@ npm install
 npm run serve
 ```
 
-### Django Project Setup
+## Django Project Setup
 
 This guide provides step-by-step instructions to set up a Django project with Django REST framework and MySQL.
 
