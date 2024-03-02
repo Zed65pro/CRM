@@ -1,7 +1,7 @@
 <!-- DeleteCustomer.vue -->
 <template>
-  <button @click="showConfirmation" class="btn btn-danger btn-sm">
-    Delete
+  <button @click="showConfirmation" class="btn btn-danger btn-with-icon btn-sm">
+    <BsTrashFill style="font-size: 22px" />
   </button>
 
   <div v-if="showPopup" class="overlay" @click="cancelDelete"></div>
@@ -41,9 +41,14 @@
 
 <script>
 import axios from "axios";
+import { BsTrashFill } from "@kalimahapps/vue-icons";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "DeleteCustomer",
+  components: {
+    BsTrashFill,
+  },
   props: {
     customer: Object,
     fetchCustomers: Function,
@@ -68,6 +73,9 @@ export default {
         this.fetchCustomers();
         // Optionally, redirect to the customer list page or perform other actions
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error deleting customer:", error);
       }
       this.$store.commit("setIsLoading", false);
