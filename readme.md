@@ -3,7 +3,7 @@
 
 - Simple CRM application where employees can login, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
 
-# Project Details
+## Project Details
 
 - Python 3.7.0
 - Django 3.2.24
@@ -14,6 +14,8 @@
 - axios 1.6.7
 
 ### Vue Project Setup
+
+- cd into the directory
 
 ```bash
 cd client
@@ -36,12 +38,12 @@ npm run serve
 
 This guide provides step-by-step instructions to set up a Django project with Django REST framework and MySQL.
 
-### Prerequisites
+## Prerequisites
 
 - Python (>=3.7)
 - MySQL database server
 
-### Setup
+## Setup
 
 First cd into the directory
 ```bash
