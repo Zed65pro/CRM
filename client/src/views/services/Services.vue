@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container">
     <h2 class="mb-4">List of Services</h2>
 
     <!-- Add Service Button -->
@@ -29,7 +29,6 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Description</th>
             <th>Price</th>
             <th>Duration (months)</th>
             <th>Added since</th>
@@ -42,7 +41,6 @@
         <tbody>
           <tr v-for="service in filteredServices" :key="service.id">
             <td>{{ service.name }}</td>
-            <td>{{ service.description }}</td>
             <td>{{ service.price }}</td>
             <td>{{ service.duration_months }}</td>
             <td>{{ formattedDate(service.created_at) }}</td>
@@ -72,6 +70,7 @@ import { formatDate } from "../../utils/formatDate.js";
 import UpdateService from "../../components/services/UpdateService";
 import DeleteService from "../../components/services/DeleteService";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "Services",
@@ -110,6 +109,9 @@ export default {
         const response = await axios.get("services/");
         this.services = response.data;
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error fetching services:", error);
       }
       this.$store.commit("setIsLoading", false);
@@ -135,6 +137,9 @@ export default {
         );
         this.closeDeleteModal();
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error deleting service:", error);
       }
       this.$store.commit("setIsLoading", false);

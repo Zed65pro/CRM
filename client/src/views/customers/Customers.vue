@@ -38,9 +38,9 @@
             <td>
               <router-link
                 :to="{ name: 'Customer', params: { id: customer.id } }"
-                class="btn btn-primary btn-sm me-1"
+                class="btn btn-primary btn-with-icon btn-sm me-1"
               >
-                Edit
+                <AkEdit class="icon" style="font-size: 22px" />
               </router-link>
               <DeleteCustomer
                 :customer="customer"
@@ -61,12 +61,14 @@ import SearchCustomers from "../../components/customers/SearchCustomers";
 import { filters } from "../../utils/searchCustomersUtils.js";
 import { formatDate } from "../../utils/formatDate.js";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+import { AkEdit } from "@kalimahapps/vue-icons";
 
 export default {
   name: "Customers",
   components: {
     DeleteCustomer,
     SearchCustomers,
+    AkEdit,
   },
   mixins: [axiosAuthMixin],
   data() {
@@ -88,6 +90,9 @@ export default {
         case "address":
           return filters.filterByAddress(this.customers, this.searchQuery);
         case "service":
+          if (this.searchQuery === "") {
+            return this.customers;
+          }
           return filters.filterByService(this.customers, this.searchQuery);
         default:
           return this.customers;

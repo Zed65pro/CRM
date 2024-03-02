@@ -3,7 +3,7 @@
     <div class="row justify-content-center">
       <div class="col-lg-6">
         <div class="text-center mb-4">
-          <h2 class="display-4 text-primary">Add Customer</h2>
+          <h2 class="display-4 text-success">Add Customer</h2>
           <p class="lead">Provide details to add a new customer..</p>
         </div>
         <form @submit.prevent="submitForm">
@@ -16,8 +16,13 @@
               id="first_name"
               placeholder="Enter the Customer's First name..."
               class="form-control"
+              pattern="[a-zA-Z]{1,25}"
+              oninvalid="this.setCustomValidity('Please enter the customer\'s first name.')"
+              oninput="setCustomValidity('')"
+              required
             />
           </div>
+          <!-- Last name input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="last_name">Last Name</label>
             <input
@@ -26,36 +31,59 @@
               id="last_name"
               placeholder="Enter the Customer's last name..."
               class="form-control"
+              required
+              pattern="[a-zA-Z]{1,25}"
+              oninvalid="this.setCustomValidity('Please enter the customer\'s last name.')"
+              oninput="setCustomValidity('')"
             />
           </div>
 
-          <!-- Customer Description input -->
+          <!-- Customer Address input -->
           <div class="form-outline mb-4">
-            <label class="form-label" for="address">Address</label>
-            <textarea
+            <label class="form-label" for="address">City</label>
+            <select
               v-model="address"
-              id="address"
-              placeholder="Enter the customer's address..."
-              class="form-control"
-              rows="4"
-            ></textarea>
+              id="city"
+              class="form-select form-select-sm"
+              required
+            >
+              <option value="" disabled selected>Select a city</option>
+              <option value="Nablus">Nablus</option>
+              <option value="Haifa">Haifa</option>
+              <option value="Al-Khalil">Al-Khalil</option>
+              <option value="Ramallah">Ramallah</option>
+              <option value="Bethlehem">Bethlehem</option>
+              <option value="Tulkarem">Tulkarem</option>
+              <option value="Gaza">Gaza</option>
+              <option value="Jinen">Jinen</option>
+            </select>
+            <div class="invalid-feedback">Please select a city.</div>
           </div>
 
-          <!-- Price input -->
+          <!-- Phone number input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="phone_number">Phone number</label>
-            <input
-              v-model="phone_number"
-              type="number"
-              id="phone_number"
-              placeholder="Enter the customer's phone number..."
-              pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
-              class="form-control"
-            />
+            <div class="input-group">
+              <span class="input-group-text">+970</span>
+              <input
+                v-model="phone_number"
+                type="tel"
+                id="phone_number"
+                placeholder="i.e 551936142"
+                pattern="[0-9]{9}"
+                oninvalid="this.setCustomValidity('Please enter a valid phone number.')"
+                oninput="setCustomValidity('')"
+                class="form-control"
+                required
+              />
+              <div class="invalid-feedback">
+                Please enter a valid phone number.
+              </div>
+            </div>
           </div>
 
           <!-- Submit button -->
-          <button type="submit" class="btn btn-primary btn-block mb-4">
+          <button type="submit" class="btn btn-success btn-block mb-4">
             Add Customer
           </button>
         </form>
@@ -78,11 +106,15 @@ export default {
       last_name: "",
       address: "",
       phone_number: null,
+      isSubmitForm: false,
     };
   },
   methods: {
     async submitForm() {
+      console.log(this.isSubmitForm);
+      this.isSubmitForm = true;
       this.$store.commit("setIsLoading", true);
+
       const newCustomer = {
         first_name: this.first_name,
         last_name: this.last_name,
@@ -101,6 +133,9 @@ export default {
           // Optionally, you can redirect to the services page or perform other actions.
         })
         .catch((error) => {
+          toast.error("Something went wrong. Please try again.", {
+            autoClose: 1000,
+          });
           console.error("Error adding customer:", error);
         });
       this.$store.commit("setIsLoading", false);
@@ -111,4 +146,9 @@ export default {
 
 <style>
 /* Add your custom styles here */
+select {
+  margin-top: -3px;
+  background-color: white;
+  height: 30px;
+}
 </style>

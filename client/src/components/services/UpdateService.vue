@@ -1,9 +1,9 @@
 <template>
   <button
     @click="openEditModal(service)"
-    class="btn btn-primary btn-sm me-2 mb-1"
+    class="btn btn-primary btn-sm me-1 mb-1 btn-with-icon"
   >
-    Edit
+    <AkEdit class="icon" style="font-size: 18px" />
   </button>
   <div v-if="showEditModal" class="overlay" @click="closeEditModal"></div>
   <!-- Edit Service Modal -->
@@ -41,6 +41,9 @@
                 class="form-control"
                 id="editServiceName"
                 required
+                pattern="[a-zA-Z]{1,25}"
+                oninvalid="this.setCustomValidity('Please enter the service\'s name.')"
+                oninput="setCustomValidity('')"
               />
             </div>
             <div class="mb-3">
@@ -51,7 +54,11 @@
                 v-model="selectedService.description"
                 class="form-control"
                 id="editServiceDescription"
+                pattern="[a-zA-Z]{1,255}"
+                oninvalid="this.setCustomValidity('Please enter the service\'s description.')"
+                oninput="setCustomValidity('')"
                 rows="3"
+                required
               ></textarea>
             </div>
             <div class="mb-3">
@@ -61,18 +68,27 @@
                 type="number"
                 class="form-control"
                 id="editServicePrice"
+                step="0.01"
+                min="0"
+                max="10000"
+                oninvalid="this.setCustomValidity('Please enter a valid service price. 2 max decimals')"
+                oninput="setCustomValidity('')"
                 required
               />
             </div>
             <div class="mb-3">
               <label for="editServiceDuration" class="form-label"
-                >Duration (months)</label
+                >Duration (in months)</label
               >
               <input
                 v-model="selectedService.duration_months"
                 type="number"
                 class="form-control"
                 id="editServiceDuration"
+                min="1"
+                max="120"
+                oninvalid="this.setCustomValidity('Please enter a valid service duration. upto a max of 10 years i.e 120 months.')"
+                oninput="setCustomValidity('')"
                 required
               />
             </div>
@@ -88,9 +104,14 @@
 
 <script>
 import axios from "axios";
+import { AkEdit } from "@kalimahapps/vue-icons";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "UpdateService",
+  components: {
+    AkEdit,
+  },
   props: {
     selectedService: Object,
   },
@@ -120,6 +141,9 @@ export default {
 
         this.closeEditModal();
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error updating service:", error);
       }
       this.$store.commit("setIsLoading", false);

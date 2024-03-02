@@ -1,7 +1,10 @@
 <template>
   <!-- Delete Service Popup -->
-  <button @click="openDeleteModal(service)" class="btn btn-danger btn-sm mb-1">
-    Delete
+  <button
+    @click="openDeleteModal(service)"
+    class="btn btn-danger btn-with-icon btn-sm mb-1"
+  >
+    <BsTrashFill style="font-size: 18px" />
   </button>
   <div v-if="showDeleteModal" class="overlay" @click="closeDeleteModal"></div>
   <div
@@ -39,9 +42,14 @@
 
 <script>
 import axios from "axios";
+import { BsTrashFill } from "@kalimahapps/vue-icons";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "DeleteService",
+  components: {
+    BsTrashFill,
+  },
   props: {
     selectedService: Object,
   },
@@ -68,6 +76,9 @@ export default {
         this.$emit("delete-services", this.selectedService.id);
         this.closeDeleteModal();
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error deleting service:", error);
       }
       this.$store.commit("setIsLoading", false);

@@ -11,6 +11,9 @@
           type="text"
           class="form-control"
           id="firstName"
+          pattern="[a-zA-Z]{1,25}"
+          oninvalid="this.setCustomValidity('Please enter the customer\'s first name')"
+          oninput="setCustomValidity('')"
           required
         />
       </div>
@@ -22,30 +25,51 @@
           type="text"
           class="form-control"
           id="lastName"
+          pattern="[a-zA-Z]{1,25}"
+          oninvalid="this.setCustomValidity('Please enter the customer\'s last name.')"
+          oninput="setCustomValidity('')"
           required
         />
       </div>
 
-      <div class="form-group">
-        <label for="address">Address</label>
-        <input
+      <div class="form-outline mb-4">
+        <label class="form-label" for="address">City</label>
+        <select
           v-model="customer.address"
-          type="text"
-          class="form-control"
-          id="address"
+          id="city"
+          class="form-select form-select-sm"
           required
-        />
+        >
+          <option value="" disabled selected>Select a city</option>
+          <option value="Nablus">Nablus</option>
+          <option value="Haifa">Haifa</option>
+          <option value="Al-Khalil">Al-Khalil</option>
+          <option value="Ramallah">Ramallah</option>
+          <option value="Bethlehem">Bethlehem</option>
+          <option value="Tulkarem">Tulkarem</option>
+          <option value="Gaza">Gaza</option>
+          <option value="Jinen">Jinen</option>
+        </select>
+        <div class="invalid-feedback">Please select a city.</div>
       </div>
 
-      <div class="form-group">
-        <label for="phoneNumber">Phone Number</label>
-        <input
-          v-model="customer.phone_number"
-          type="tel"
-          class="form-control"
-          id="phoneNumber"
-          required
-        />
+      <div class="form-outline mb-4">
+        <label class="form-label" for="phone_number">Phone number</label>
+        <div class="input-group">
+          <span class="input-group-text">+970</span>
+          <input
+            v-model="customer.phone_number"
+            type="tel"
+            id="phone_number"
+            placeholder="i.e 551936142"
+            pattern="[0-9]{9}"
+            oninvalid="this.setCustomValidity('Please enter a valid phone number.')"
+            oninput="setCustomValidity('')"
+            class="form-control"
+            required
+          />
+          <div class="invalid-feedback">Please enter a valid phone number.</div>
+        </div>
       </div>
 
       <button type="submit" class="btn btn-primary mt-4">
@@ -58,6 +82,7 @@
 <script>
 import axios from "axios";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "UpdateCustomer",
@@ -84,6 +109,9 @@ export default {
         const response = await axios.get(`customers/${this.$route.params.id}`);
         this.customer = response.data;
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error fetching customer details:", error);
       }
       this.$store.commit("setIsLoading", false);
@@ -98,6 +126,9 @@ export default {
         // Optionally, you can redirect to the customer details page or perform other actions.
         this.$router.go(-1);
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error updating customer:", error);
       }
       this.$store.commit("setIsLoading", false);

@@ -29,15 +29,20 @@
 
         <router-link
           :to="{ name: 'UpdateCustomer', params: { id: customer.id } }"
-          class="btn btn-primary btn-sm me-2"
+          class="btn btn-primary btn-with-icon btn-sm me-1"
         >
-          Edit Customer
+          <AkEdit class="icon" style="font-size: 22px" />
         </router-link>
 
         <DeleteCustomer :customer="customer" />
         <!-- Add more customer details as needed -->
       </div>
     </div>
+    <!-- Button to Add New Service -->
+    <AddCustomerService
+      :fetchCustomerDetails="fetchCustomerDetails"
+      :customer="customer"
+    />
     <!-- Display services associated with the customer -->
     <div v-if="customer">
       <h3 class="mt-4">Services</h3>
@@ -69,11 +74,6 @@
           </tr>
         </tbody>
       </table>
-      <!-- Button to Add New Service -->
-      <AddCustomerService
-        :fetchCustomerDetails="fetchCustomerDetails"
-        :customer="customer"
-      />
     </div>
   </div>
 </template>
@@ -84,6 +84,8 @@ import DeleteCustomer from "../../components/customers/DeleteCustomer";
 import DeleteCustomerService from "../../components/customers/DeleteCustomerService";
 import AddCustomerService from "../../components/customers/AddCustomerService";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+import { AkEdit } from "@kalimahapps/vue-icons";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "Customer",
@@ -97,6 +99,7 @@ export default {
     DeleteCustomer,
     DeleteCustomerService,
     AddCustomerService,
+    AkEdit,
   },
   mounted() {
     // Fetch customer details from the backend based on the route parameter
@@ -113,6 +116,9 @@ export default {
         })
         .catch((error) => {
           this.customer = null;
+          toast.error("Something went wrong. Please try again.", {
+            autoClose: 1000,
+          });
           console.error("Error fetching customer details:", error);
         });
       this.$store.commit("setIsLoading", false);

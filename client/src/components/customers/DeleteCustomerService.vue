@@ -1,8 +1,11 @@
 <!-- DeleteService.vue -->
 <template>
   <div>
-    <button @click="showConfirmation" class="btn btn-danger">
-      Delete Service
+    <button
+      @click="showConfirmation"
+      class="btn btn-danger btn-with-icon btn-sm"
+    >
+      <BsTrashFill style="font-size: 22px" />
     </button>
 
     <!-- Confirmation Popup Modal -->
@@ -47,9 +50,14 @@
 
 <script>
 import axios from "axios";
+import { BsTrashFill } from "@kalimahapps/vue-icons";
+import { toast } from "vue3-toastify";
 
 export default {
   name: "DeleteCustomerService",
+  components: {
+    BsTrashFill,
+  },
   props: {
     service_id: Number,
     fetchCustomerDetails: Function,
@@ -75,6 +83,9 @@ export default {
         this.showPopup = false;
         // Optionally, you can update the local data or perform other actions
       } catch (error) {
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
         console.error("Error removing service from customer:", error);
       }
       this.$store.commit("setIsLoading", false);
