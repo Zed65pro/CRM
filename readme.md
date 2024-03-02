@@ -1,6 +1,8 @@
-Certainly! Here is the combined markdown text:
-
 ```markdown
+## App Details
+
+- Simple CRM application where employees can login, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
+
 # Project Details
 
 - Python 3.7.0
@@ -9,18 +11,20 @@ Certainly! Here is the combined markdown text:
 - Vue 3.4.21
 - Vue/CLI 5.0.8
 - Bootstrap 5.3.3
+- axios 1.6.7
 
-## To Run Django
+### Vue Project Setup
 
 ```bash
-# Configure MySQL using .env.example
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
+cd client
 ```
 
-## To Run Vue
+## Prerequisites
 
+- Node.js (v18.16.1)
+- Vue CLI (v5.0.8)
+
+## Setup and compiles for development
 ```bash
 # Install dependencies
 npm install
@@ -28,66 +32,23 @@ npm install
 npm run serve
 ```
 
-## App Details
-
-- Simple CRM application where employees can login, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
-
-## Additional Dependencies
-
-```bash
-npm install --save bootstrap
-npm install --save @popperjs/core
-npm install axios
-```
-
-## Project Overview
-
-The project is built with the following technologies:
-
-- Vue.js v3.4.21: A JavaScript framework for building user interfaces.
-- Vue Router: Provides navigation management for Vue.js applications.
-- Vuex: State management library for Vue.js applications.
-- Axios: A promise-based HTTP client for making HTTP requests.
-- Bootstrap v5.3.3: A popular CSS framework for building responsive and mobile-first websites.
-- Django REST Framework: A powerful and flexible toolkit for building Web APIs with Django.
-
-## Prerequisites
-
-- Node.js (v18.16.1)
-- Vue CLI (v5.0.8)
-
-## Project Setup
-
-```bash
-npm install
-```
-
-## Compiles and Hot-reloads for Development
-
-```bash
-npm run serve
-```
-
-## Django Project Setup
+### Django Project Setup
 
 This guide provides step-by-step instructions to set up a Django project with Django REST framework and MySQL.
 
 ### Prerequisites
 
 - Python (>=3.7)
-- Pipenv
 - MySQL database server
 
 ### Setup
 
-1. Clone the repository
-
+First cd into the directory
 ```bash
-git clone https://github.com/your-username/your-django-project.git
-cd your-django-project
+cd server
 ```
 
-2. Set up a virtual environment (Windows)
+1. Set up a virtual environment
 
 ```bash
 python -m venv venv
@@ -138,15 +99,8 @@ python manage.py runserver
 
 ### Additional Configuration
 
-Adjust other settings in `yourproject/settings.py` as needed.
+Adjust other settings in `crm/settings.py` as needed.
 
 ## Contribution
 
 Feel free to contribute to this project. Submit a pull request or open an issue if you have any suggestions or improvements.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-```
-
-You can copy and paste this text directly into your README.md file.
