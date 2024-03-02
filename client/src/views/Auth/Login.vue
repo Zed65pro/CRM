@@ -6,10 +6,7 @@
           <h2 class="display-4 text-success">Login</h2>
           <p class="lead">Enter your username and password my dear user.</p>
         </div>
-        <form
-          @submit.prevent="SubmitForm"
-          :class="{ 'was-validated': submissionAttempted }"
-        >
+        <form @submit.prevent="SubmitForm">
           <!-- Username input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="username">Username</label>
@@ -19,10 +16,10 @@
               placeholder="Enter your Username..."
               class="form-control"
               v-model="username"
+              oninvalid="this.setCustomValidity('Please enter your username')"
+              oninput="setCustomValidity('')"
               required
             />
-            <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Username is required.</div>
           </div>
 
           <!-- Password input -->
@@ -34,10 +31,10 @@
               id="password"
               class="form-control"
               v-model="password"
+              oninvalid="this.setCustomValidity('Please enter your password')"
+              oninput="setCustomValidity('')"
               required
             />
-            <div class="valid-feedback">Looks good!</div>
-            <div class="invalid-feedback">Password is required.</div>
           </div>
 
           <!-- Submit button -->
@@ -54,12 +51,12 @@
             </ul>
           </div>
 
-          <!-- Register buttons -->
+          <!-- Register buttons
           <div class="text-center">
             <p>
               Not a member? <router-link to="/signup">Register</router-link>
             </p>
-          </div>
+          </div>-->
         </form>
       </div>
     </div>
@@ -78,7 +75,6 @@ export default {
       username: "",
       password: "",
       errors: [],
-      submissionAttempted: false,
     };
   },
   methods: {
@@ -87,20 +83,32 @@ export default {
         // Handle known errors
         if (error.response.status === 400) {
           // Bad Request (validation error)
-          this.errors.push("User not available!");
+          //this.errors.push("User not available!");
+          toast.error("Invalid Username or Password", {
+            autoClose: 1000,
+          });
         } else if (error.response.status === 401) {
           // Unauthorized
-          this.errors.push(
+          /*this.errors.push(
             "Invalid credentials. Please check your username and password."
-          );
+          );*/
+          toast.warning("Unauthorized access", {
+            autoClose: 1000,
+          });
         } else if (error.response.status === 404) {
           // User not found
-          this.errors.push("User not found. Please check your username.");
+          //this.errors.push("User not found. Please check your username.");
+          toast.error("Invalid Username or Password", {
+            autoClose: 1000,
+          });
         } else {
           // Handle other HTTP errors
-          this.errors.push(
+          /*this.errors.push(
             `Error: ${error.response.status} - ${error.response.statusText}`
-          );
+          );*/
+          toast.error("Something went wrong. Please try again.", {
+            autoClose: 1000,
+          });
         }
       } else if (error.message) {
         // Handle network errors or other exceptions
@@ -114,16 +122,8 @@ export default {
     },
     // Your methods here
     async SubmitForm() {
-      this.submissionAttempted = true;
       this.errors = [];
       this.$store.commit("setIsLoading", true);
-
-      if (!this.username) {
-        this.errors.push("Username required.");
-      }
-      if (!this.password) {
-        this.errors.push("Password required");
-      }
 
       if (!this.errors.length) {
         const form = {
