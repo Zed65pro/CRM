@@ -14,10 +14,8 @@
 - axios 1.6.7
 
 ## Vue Project Setup
-
-- cd into the directory
-
 ```bash
+#cd into the directory
 cd client
 ```
 
@@ -44,14 +42,12 @@ This guide provides step-by-step instructions to set up a Django project with Dj
 - MySQL database server
 
 ## Setup
-
-First cd into the directory
 ```bash
+#First cd into the directory
 cd server
 ```
 
 1. Set up a virtual environment
-
 ```bash
 python -m venv venv
 # For Windows
@@ -61,7 +57,6 @@ venv/bin/activate
 ```
 
 3. Install Dependencies
-
 ```bash
 pip install -r requirements.txt
 # Special step for windows (for mysqlclient error mitigation)
@@ -71,7 +66,6 @@ pip install mysqlclient
 ```
 
 4. Create a MySQL Database
-
 ```sql
 CREATE DATABASE your_database_name;
 ```
@@ -81,20 +75,17 @@ CREATE DATABASE your_database_name;
 Update your database configuration. Create a `.env` file using `.env.example` as an example to fill in the details.
 
 6. Apply Migrations
-
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
 7. Create Superuser (Optional)
-
 ```bash
 python manage.py createsuperuser
 ```
 
 8. Run the Development Server
-
 ```bash
 python manage.py runserver
 ```
