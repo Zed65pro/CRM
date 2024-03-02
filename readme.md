@@ -1,0 +1,152 @@
+Certainly! Here is the combined markdown text:
+
+```markdown
+# Project Details
+
+- Python 3.7.0
+- Django 3.2.24
+- MySQL 5.7.44
+- Vue 3.4.21
+- Vue/CLI 5.0.8
+- Bootstrap 5.3.3
+
+## To Run Django
+
+```bash
+# Configure MySQL using .env.example
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+
+## To Run Vue
+
+```bash
+# Install dependencies
+npm install
+# Run the development server
+npm run serve
+```
+
+## App Details
+
+- Simple CRM application where employees can login, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
+
+## Additional Dependencies
+
+```bash
+npm install --save bootstrap
+npm install --save @popperjs/core
+npm install axios
+```
+
+## Project Overview
+
+The project is built with the following technologies:
+
+- Vue.js v3.4.21: A JavaScript framework for building user interfaces.
+- Vue Router: Provides navigation management for Vue.js applications.
+- Vuex: State management library for Vue.js applications.
+- Axios: A promise-based HTTP client for making HTTP requests.
+- Bootstrap v5.3.3: A popular CSS framework for building responsive and mobile-first websites.
+- Django REST Framework: A powerful and flexible toolkit for building Web APIs with Django.
+
+## Prerequisites
+
+- Node.js (v18.16.1)
+- Vue CLI (v5.0.8)
+
+## Project Setup
+
+```bash
+npm install
+```
+
+## Compiles and Hot-reloads for Development
+
+```bash
+npm run serve
+```
+
+## Django Project Setup
+
+This guide provides step-by-step instructions to set up a Django project with Django REST framework and MySQL.
+
+### Prerequisites
+
+- Python (>=3.7)
+- Pipenv
+- MySQL database server
+
+### Setup
+
+1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/your-django-project.git
+cd your-django-project
+```
+
+2. Set up a virtual environment (Windows)
+
+```bash
+python -m venv venv
+# For Windows
+venv/Scripts/activate
+# For Linux
+venv/bin/activate
+```
+
+3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+# Special step for windows (for mysqlclient error mitigation)
+pip install mysqlclient-1.4.6-cp37-cp37m-win_amd64.whl
+# Otherwise
+pip install mysqlclient
+```
+
+4. Create a MySQL Database
+
+```sql
+CREATE DATABASE your_database_name;
+```
+
+5. Configure Database Settings
+
+Update your database configuration. Create a `.env` file using `.env.example` as an example to fill in the details.
+
+6. Apply Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+7. Create Superuser (Optional)
+
+```bash
+python manage.py createsuperuser
+```
+
+8. Run the Development Server
+
+```bash
+python manage.py runserver
+```
+
+### Additional Configuration
+
+Adjust other settings in `yourproject/settings.py` as needed.
+
+## Contribution
+
+Feel free to contribute to this project. Submit a pull request or open an issue if you have any suggestions or improvements.
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+```
+
+You can copy and paste this text directly into your README.md file.
