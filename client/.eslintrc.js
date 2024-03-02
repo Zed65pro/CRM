@@ -17,5 +17,6 @@ module.exports = {
     "no-unused-vars": "off",
     "vue/no-mutating-props": "off",
     "vue/multi-word-component-names": "off",
+    requireConfigFile: false,
   },
 };
