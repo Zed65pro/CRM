@@ -1,0 +1,28 @@
+# .gitignore
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore the virtual environment
+venv/
+env/
+
+# Ignore the Django SQLite database file
+*.sqlite3
+
+# Ignore the development settings module
+settings_local.py
+
+# Ignore the media directory (user-uploaded content)
+media/
+
+# Ignore the static directory (collected static files)
+static/
+
+# Ignore secret key and other sensitive information
+*.env
+
+# Ignore system files
+.DS_Store
+Thumbs.db

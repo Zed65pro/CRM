@@ -1,0 +1,126 @@
+<template>
+  <div class="container">
+    <!-- Display customer information -->
+    <h2 v-if="customer" class="mb-4">Customer Details</h2>
+    <div v-if="!customer">User Not found</div>
+    <div v-else class="card">
+      <div class="card-body">
+        <h5 class="card-title">Customer Details</h5>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <p class="fw-bold mb-2">
+              <strong>First Name:</strong> {{ customer.first_name }}
+            </p>
+            <p class="fw-bold mb-2">
+              <strong>Last Name:</strong> {{ customer.last_name }}
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <p class="fw-bold mb-2">
+              <strong>Address:</strong> {{ customer.address }}
+            </p>
+            <p class="fw-bold mb-2">
+              <strong>Phone number:</strong> {{ customer.phone_number }}
+            </p>
+          </div>
+        </div>
+
+        <router-link
+          :to="{ name: 'UpdateCustomer', params: { id: customer.id } }"
+          class="btn btn-primary btn-sm me-2"
+        >
+          Edit Customer
+        </router-link>
+
+        <DeleteCustomer :customer="customer" />
+        <!-- Add more customer details as needed -->
+      </div>
+    </div>
+    <!-- Display services associated with the customer -->
+    <div v-if="customer">
+      <h3 class="mt-4">Services</h3>
+      <table class="table table-striped text-center">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Duration (months)</th>
+            <!-- Add more service details as needed -->
+          </tr>
+        </thead>
+        <tbody class="align-middle">
+          <tr v-for="service in customer.services" :key="service.id">
+            <td>{{ service.id }}</td>
+            <td>{{ service.name }}</td>
+            <td>{{ service.description }}</td>
+            <td>{{ service.price }}</td>
+            <td>{{ service.duration_months }}</td>
+            <td>
+              <DeleteCustomerService
+                :service_id="service.id"
+                :fetchCustomerDetails="fetchCustomerDetails"
+              />
+            </td>
+            <!-- Add more service details as needed -->
+          </tr>
+        </tbody>
+      </table>
+      <!-- Button to Add New Service -->
+      <AddCustomerService
+        :fetchCustomerDetails="fetchCustomerDetails"
+        :customer="customer"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+import DeleteCustomer from "../../components/customers/DeleteCustomer";
+import DeleteCustomerService from "../../components/customers/DeleteCustomerService";
+import AddCustomerService from "../../components/customers/AddCustomerService";
+import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+
+export default {
+  name: "Customer",
+  mixins: [axiosAuthMixin],
+  data() {
+    return {
+      customer: {},
+    };
+  },
+  components: {
+    DeleteCustomer,
+    DeleteCustomerService,
+    AddCustomerService,
+  },
+  mounted() {
+    // Fetch customer details from the backend based on the route parameter
+    const customerId = this.$route.params.id;
+    this.fetchCustomerDetails(customerId);
+  },
+  methods: {
+    async fetchCustomerDetails(customerId) {
+      this.$store.commit("setIsLoading", true);
+      await axios
+        .get(`customers/${customerId}/`)
+        .then((response) => {
+          this.customer = response.data;
+        })
+        .catch((error) => {
+          this.customer = null;
+          console.error("Error fetching customer details:", error);
+        });
+      this.$store.commit("setIsLoading", false);
+    },
+  },
+};
+</script>
+
+<style>
+/* Add your custom styles here */
+</style>
