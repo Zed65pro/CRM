@@ -104,3 +104,4 @@ Adjust other settings in `crm/settings.py` as needed.
 ## Contribution
 
 Feel free to contribute to this project. Submit a pull request or open an issue if you have any suggestions or improvements.
+```
