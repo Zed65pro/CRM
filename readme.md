@@ -1,4 +1,25 @@
 ```markdown
+```
+## App Details
+
+- Simple CRM application where employees can log in, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
+
+## Project Details
+
+- Python 3.7.0
+- Django 3.2.24
+- MySQL 5.7.44
+- Vue 3.4.21
+- Vue/CLI 5.0.8
+- Bootstrap 5.3.3
+- axios 1.6.7
+
+## Vue Project Setup
+```bash
+#cd into the directory
+cd client
+```
+
 ## Prerequisites
 
 - Node.js (v18.16.1)
