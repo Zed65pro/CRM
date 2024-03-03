@@ -1,6 +1,12 @@
 ## App Details
 
-- Simple CRM application where employees can log in, manage (add, edit, delete) customers, delete/add services to customers, allow admins to add/edit/delete new services with a simple UI.
+Simple CRM application where employees can:
+- Log in to the system
+- Search and list customers
+- Search and list services
+- Manage (Add, Edit, Delete) customers
+- Delete/Add services to the customers
+- Allow Admins to Manage (Add/Edit/Delete) services
 
 ## Project Details
 
