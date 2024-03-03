@@ -43,7 +43,7 @@
             <label class="form-label" for="address">City</label>
             <select
               v-model="address"
-              id="city"
+              id="address"
               class="form-select form-select-sm"
               required
             >
