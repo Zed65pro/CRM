@@ -19,7 +19,7 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     address = models.TextField()
-    phone_number = models.CharField(max_length=15)
+    phone_number = models.CharField(max_length=15,unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
