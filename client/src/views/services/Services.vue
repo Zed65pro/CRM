@@ -165,9 +165,11 @@ export default {
     },
     deleteServices(service_id) {
       // Find the index of the modified service in this.services and update it
-      this.services = this.services.filter(
-        (service) => service.id !== service_id
-      );
+      if (this.services.length === 1 && this.paginationData.currentPage > 1)
+        this.fetchServices(this.paginationData.currentPage - 1);
+      else {
+        this.fetchServices(this.paginationData.currentPage);
+      }
     },
   },
 };
