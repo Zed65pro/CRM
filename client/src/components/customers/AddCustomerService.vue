@@ -6,11 +6,13 @@
       <label for="serviceSelect" class="form-label">Select a Service</label>
       <select
         v-model="selectedService"
-        aria-label="Default select example"
+        aria-label="Select a Service"
         id="serviceSelect"
-        class="form-select"
+        class="form-select form-select-sm"
       >
-        <option value="" disabled selected>Select a Service</option>
+        <option value="" disabled :selected="!selectedService">
+          Select a Service
+        </option>
         <option
           v-for="service in allServices"
           :key="service.id"
@@ -22,7 +24,13 @@
     </div>
 
     <!-- Add Service button -->
-    <button @click="addService" class="btn btn-primary">Add Service</button>
+    <button
+      @click="addService"
+      class="btn btn-primary"
+      :disabled="!selectedService"
+    >
+      Add Service
+    </button>
   </div>
 </template>
 
@@ -37,7 +45,7 @@ export default {
   },
   data() {
     return {
-      selectedService: null,
+      selectedService: "",
       allServices: [], // To store all available services
     };
   },
@@ -49,7 +57,7 @@ export default {
       this.$store.commit("setIsLoading", true);
 
       try {
-        const response = await axios.get("services/");
+        const response = await axios.get("services/all/");
         this.allServices = response.data;
       } catch (error) {
         console.error("Error fetching services:", error);
@@ -57,6 +65,12 @@ export default {
       this.$store.commit("setIsLoading", false);
     },
     async addService() {
+      if (!this.selectedService) {
+        toast.error("Please select a service.", {
+          autoClose: 1000,
+        });
+        return;
+      }
       if (this.selectedService === null || this.selectedService === "") {
         toast.error("Please select a service.", {
           autoClose: 1000,
@@ -77,12 +91,10 @@ export default {
 
       this.$store.commit("setIsLoading", true);
       try {
-        // Send POST request to add the selected service to the customer
         await axios.patch(
           `customers/${this.$route.params.id}/add-service/${this.selectedService}`
         );
         this.fetchCustomerDetails(this.$route.params.id);
-        // Optionally, redirect to the customer detail page or perform other actions
       } catch (error) {
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
