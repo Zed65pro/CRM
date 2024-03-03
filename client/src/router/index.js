@@ -110,7 +110,7 @@ router.beforeEach((to, from, next) => {
     to.matched.some((m) => m.meta.requireAdmin) &&
     !store.state.user.is_staff
   ) {
-    next({ name: "Customers" });
+    next({ name: "Dashboard" });
   } else next();
 });
 export default router;
