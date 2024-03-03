@@ -13,6 +13,7 @@
         class="form-control me-1"
         placeholder="Search..."
         style="width: 300px"
+        id="searchCustomer"
       />
 
       <!-- Filter Dropdown -->

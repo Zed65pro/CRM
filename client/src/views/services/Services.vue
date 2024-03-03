@@ -18,6 +18,7 @@
           type="text"
           style="max-width: 600px"
           class="form-control mx-auto"
+          id="searchServices"
           placeholder="Search services..."
           @keyup.enter="fetchServices(1)"
         />

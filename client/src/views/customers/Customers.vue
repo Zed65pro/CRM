@@ -51,7 +51,7 @@
               </router-link>
               <DeleteCustomer
                 :customer="customer"
-                :fetchCustomers="fetchCustomers"
+                @fetch-customers="fetchCustomers"
               />
             </td>
           </tr>
@@ -126,7 +126,6 @@ export default {
         })
         .then((response) => {
           this.customers = response.data.results;
-          console.log(this.customers);
           this.paginationData = {
             count: response.data.count,
             next: response.data.next,

@@ -15,6 +15,7 @@
               id="username"
               placeholder="Enter your Username..."
               class="form-control"
+              autocomplete="true"
               v-model="username"
               oninvalid="this.setCustomValidity('Please enter your username')"
               oninput="setCustomValidity('')"

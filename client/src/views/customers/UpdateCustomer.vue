@@ -36,8 +36,9 @@
         <label class="form-label" for="address">City</label>
         <select
           v-model="customer.address"
-          id="city"
+          id="address"
           class="form-select form-select-sm"
+          autocomplete="true"
           required
         >
           <option value="" disabled selected>Select a city</option>

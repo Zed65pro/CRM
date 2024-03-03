@@ -41,7 +41,8 @@
                 class="form-control"
                 id="editServiceName"
                 required
-                pattern="[a-zA-Z]{1,25}"
+                minlength="1"
+                maxlength="25"
                 oninvalid="this.setCustomValidity('Please enter the service\'s name.')"
                 oninput="setCustomValidity('')"
               />
