@@ -126,9 +126,15 @@ export default {
         // Optionally, you can redirect to the customer details page or perform other actions.
         this.$router.go(-1);
       } catch (error) {
-        toast.error("Something went wrong. Please try again.", {
-          autoClose: 1000,
-        });
+        if (error.response.status === 400) {
+          toast.error("Phone number already in use.", {
+            autoClose: 1000,
+          });
+        } else {
+          toast.error("Something went wrong. Please try again.", {
+            autoClose: 1000,
+          });
+        }
         console.error("Error updating customer:", error);
       }
       this.$store.commit("setIsLoading", false);
