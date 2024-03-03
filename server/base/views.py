@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.views import APIView
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 6  # Set the desired page size
@@ -62,6 +63,8 @@ class ServiceListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = Service.objects.all()
+
+        
         search_param = self.request.query_params.get('search', None)
         print(search_param)
         if search_param:
@@ -71,6 +74,16 @@ class ServiceListCreateView(generics.ListCreateAPIView):
             )
 
         return queryset
+
+class AllServicesView(APIView):
+    def get(self, request, format=None):
+        # Get all services without pagination
+        services = Service.objects.all()
+
+        # Serialize the services
+        serializer = ServiceSerializer(services, many=True)
+        print(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Service.objects.all()

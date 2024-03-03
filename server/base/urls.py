@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import CustomerListCreateView,CurrentUserView, ServiceListCreateView,CustomerDetailView,RemoveServiceFromCustomerView,AddServiceToCustomerView,ServiceDetailView
+from .views import AllServicesView,CustomerListCreateView,CurrentUserView, ServiceListCreateView,CustomerDetailView,RemoveServiceFromCustomerView,AddServiceToCustomerView,ServiceDetailView
 
 urlpatterns = [
     path('customers/', CustomerListCreateView.as_view(), name='customer-list-create'),
     path('services/', ServiceListCreateView.as_view(), name='service-list-create'),
+    path('services/all/', AllServicesView.as_view(), name='service-get-all'),
     path('services/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
     path('customers/<int:pk>/', CustomerDetailView.as_view(), name='customer-detail'),
     path(
