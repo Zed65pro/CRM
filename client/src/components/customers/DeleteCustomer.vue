@@ -53,6 +53,7 @@ export default {
     customer: Object,
     fetchCustomers: Function,
   },
+  emits: ["fetch-customers"],
   data() {
     return {
       showPopup: false,
@@ -70,7 +71,7 @@ export default {
         // Close the popup after deletion
         this.showPopup = false;
         this.$router.push({ name: "Customers" });
-        this.fetchCustomers();
+        this.$emit("fetch-customers");
         // Optionally, redirect to the customer list page or perform other actions
       } catch (error) {
         toast.error("Something went wrong. Please try again.", {
