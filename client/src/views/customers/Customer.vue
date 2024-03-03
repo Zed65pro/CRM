@@ -28,7 +28,10 @@
         </div>
 
         <router-link
-          :to="{ name: 'UpdateCustomer', params: { id: customer.id } }"
+          :to="{
+            name: 'UpdateCustomer',
+            params: { id: $route.params.id },
+          }"
           class="btn btn-primary btn-with-icon btn-sm me-1"
         >
           <AkEdit class="icon" style="font-size: 22px" />
@@ -44,7 +47,11 @@
       :customer="customer"
     />
     <!-- Display services associated with the customer -->
-    <div v-if="customer">
+
+    <h2 v-if="customer.services && !customer.services.length" class="mt-5">
+      Customer is not subscribed to any service
+    </h2>
+    <div v-else-if="customer">
       <h3 class="mt-4">Services</h3>
       <table class="table table-striped text-center">
         <thead>
@@ -54,6 +61,7 @@
             <th>Description</th>
             <th>Price</th>
             <th>Duration (months)</th>
+            <th>Actions</th>
             <!-- Add more service details as needed -->
           </tr>
         </thead>
@@ -75,6 +83,7 @@
         </tbody>
       </table>
     </div>
+    <h3>MANAGEMENT++</h3>
   </div>
 </template>
 
