@@ -103,25 +103,6 @@ export default {
     };
   },
   computed: {
-    filteredCustomers() {
-      switch (this.filterType) {
-        case "first_name":
-          return filters.filterByFirstName(this.customers, this.searchQuery);
-        case "last_name":
-          return filters.filterByLastName(this.customers, this.searchQuery);
-        case "phone_number":
-          return filters.filterByPhoneNumber(this.customers, this.searchQuery);
-        case "address":
-          return filters.filterByAddress(this.customers, this.searchQuery);
-        case "service":
-          if (this.searchQuery === "") {
-            return this.customers;
-          }
-          return filters.filterByService(this.customers, this.searchQuery);
-        default:
-          return this.customers;
-      }
-    },
     totalCount() {
       return this.paginationData ? this.paginationData.count : 0;
     },
@@ -145,6 +126,7 @@ export default {
         })
         .then((response) => {
           this.customers = response.data.results;
+          console.log(this.customers);
           this.paginationData = {
             count: response.data.count,
             next: response.data.next,
