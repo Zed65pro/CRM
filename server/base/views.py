@@ -82,7 +82,6 @@ class AllServicesView(APIView):
 
         # Serialize the services
         serializer = ServiceSerializer(services, many=True)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
