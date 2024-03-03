@@ -4,7 +4,7 @@ from django.db.models import Q
 from .serializers import CustomerSerializer, ServiceSerializer,UserSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
@@ -24,11 +24,16 @@ class CustomerListCreateView(generics.ListCreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
     pagination_class = CustomPageNumberPagination
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+
+    
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
     def get_queryset(self):
-        queryset = super().get_queryset()
+        # dont use self, because it can cause infinite recursion since we are overriding the same function
+        queryset = Customer.objects.all()
         search_param = self.request.query_params.get('search', None)
         filter_type = self.request.query_params.get('filter_type', None)
 
@@ -39,7 +44,7 @@ class CustomerListCreateView(generics.ListCreateAPIView):
                 'last_name': 'last_name__icontains',
                 'phone_number': 'phone_number__icontains',
                 'address': 'address__icontains',
-                'service': 'services__name__icontains',  # Add this line for services.name
+                'service': 'services__name__icontains',
             }
 
             # Dynamically construct the Q object based on filter_type
@@ -52,20 +57,28 @@ class CustomerListCreateView(generics.ListCreateAPIView):
 class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
 class ServiceListCreateView(generics.ListCreateAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
     pagination_class = CustomPageNumberPagination
+    authentication_classes = [TokenAuthentication]
+
+    # so that only admins can create but authenticated employees can view
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            return [IsAdminUser(),IsAuthenticated()]
+        return [IsAuthenticated()]
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
     def get_queryset(self):
         queryset = Service.objects.all()
-
-        
         search_param = self.request.query_params.get('search', None)
+
         print(search_param)
         if search_param:
             # Use Q objects to perform case-insensitive search on name and description
@@ -75,23 +88,27 @@ class ServiceListCreateView(generics.ListCreateAPIView):
 
         return queryset
 
+# Get all services without pagination
 class AllServicesView(APIView):
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
     def get(self, request, format=None):
-        # Get all services without pagination
         services = Service.objects.all()
-
-        # Serialize the services
         serializer = ServiceSerializer(services, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
         
 class RemoveServiceFromCustomerView(generics.UpdateAPIView):
     queryset = Customer.objects.all()
     serializer_class = ServiceSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def update(self, request, *args, **kwargs):
         service_id = kwargs.get('service_id', None)
@@ -107,6 +124,8 @@ class RemoveServiceFromCustomerView(generics.UpdateAPIView):
 class AddServiceToCustomerView(generics.UpdateAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
     def update(self, request, *args, **kwargs):
         service_id = kwargs.get('service_id', None)
