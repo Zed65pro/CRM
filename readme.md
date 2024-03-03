@@ -18,6 +18,10 @@ Simple CRM application where employees can:
 - Bootstrap 5.3.3
 - axios 1.6.7
 
+![Login Page][./assets/Login.png]
+![Customers List][./assets/customer_list.png]
+![Services list][./assets/services.png]
+
 ## Vue Project Setup
 ```bash
 #cd into the directory
