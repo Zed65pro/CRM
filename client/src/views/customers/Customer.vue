@@ -43,12 +43,16 @@
     </div>
     <!-- Button to Add New Service -->
     <AddCustomerService
+      v-if="customer"
       :fetchCustomerDetails="fetchCustomerDetails"
       :customer="customer"
     />
     <!-- Display services associated with the customer -->
 
-    <h2 v-if="customer.services && !customer.services.length" class="mt-5">
+    <h2
+      v-if="customer && customer.services && !customer.services.length"
+      class="mt-5"
+    >
       Customer is not subscribed to any service
     </h2>
     <div v-else-if="customer">
@@ -83,7 +87,7 @@
         </tbody>
       </table>
     </div>
-    <h3>MANAGEMENT++</h3>
+    <h3 v-if="customer">MANAGEMENT++</h3>
   </div>
 </template>
 
