@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <h2 class="mb-4">List of Services</h2>
+  <div class="container-fluid">
+    <h2 class="mb-3">List of Services</h2>
 
     <!-- Add Service Button -->
     <router-link
@@ -19,8 +19,15 @@
           style="max-width: 600px"
           class="form-control mx-auto"
           placeholder="Search services..."
+          @keyup.enter="fetchServices(1)"
         />
       </div>
+    </div>
+    <div class="mb-3">
+      <p>
+        {{ paginationData ? paginationData.count : this.services.length }}
+        <strong>services</strong> found.
+      </p>
     </div>
 
     <!-- Services Table -->
@@ -39,7 +46,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="service in filteredServices" :key="service.id">
+          <tr v-for="service in services" :key="service.id">
             <td>{{ service.name }}</td>
             <td>{{ service.price }}</td>
             <td>{{ service.duration_months }}</td>
@@ -60,6 +67,14 @@
           </tr>
         </tbody>
       </table>
+      <!-- Pagination -->
+      <div class="d-flex justify-content-center">
+        <Pagination
+          :current-page="paginationData.currentPage"
+          :total-pages="paginationData.totalPages"
+          @pagination-change-page="fetchServices"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +86,7 @@ import UpdateService from "../../components/services/UpdateService";
 import DeleteService from "../../components/services/DeleteService";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
 import { toast } from "vue3-toastify";
+import Pagination from "../../components/Layout/Pagination";
 
 export default {
   name: "Services",
@@ -78,11 +94,19 @@ export default {
   components: {
     UpdateService,
     DeleteService,
+    Pagination,
   },
   data() {
     return {
       services: [],
       searchQuery: "",
+      paginationData: {
+        count: 1,
+        next: "",
+        previous: "",
+        currentPage: 1, // Add currentPage property
+        totalPages: 1,
+      },
     };
   },
   computed: {
@@ -103,44 +127,28 @@ export default {
     formattedDate(isoDate) {
       return formatDate(isoDate);
     },
-    async fetchServices() {
+    async fetchServices(page = 1) {
       this.$store.commit("setIsLoading", true);
       try {
-        const response = await axios.get("services/");
-        this.services = response.data;
+        const response = await axios.get("services/", {
+          params: {
+            search: this.searchQuery,
+            page,
+          },
+        });
+        this.services = response.data.results;
+        this.paginationData = {
+          count: response.data.count,
+          next: response.data.next,
+          previous: response.data.previous,
+          currentPage: page, // Add currentPage property
+          totalPages: Math.ceil(response.data.count / 6),
+        };
       } catch (error) {
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error fetching services:", error);
-      }
-      this.$store.commit("setIsLoading", false);
-    },
-
-    openDeleteModal(service) {
-      this.selectedService = { ...service };
-      this.showDeleteModal = true;
-    },
-
-    closeDeleteModal() {
-      this.selectedService = null;
-      this.showDeleteModal = false;
-    },
-    async confirmDelete() {
-      this.$store.commit("setIsLoading", true);
-      try {
-        const response = await axios.delete(
-          `services/${this.selectedService.id}/`
-        );
-        this.services = this.services.filter(
-          (service) => service.id !== this.selectedService.id
-        );
-        this.closeDeleteModal();
-      } catch (error) {
-        toast.error("Something went wrong. Please try again.", {
-          autoClose: 1000,
-        });
-        console.error("Error deleting service:", error);
       }
       this.$store.commit("setIsLoading", false);
     },

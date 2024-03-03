@@ -3,16 +3,23 @@
 <template>
   <div class="container-fluid">
     <div class="container">
-      <h1 class="mb-4">Customer List</h1>
+      <h1 class="mb-3">Customer List</h1>
       <router-link :to="{ path: '/dashboard/add-customer' }">
         <button type="button" class="btn btn-success mb-4">Add Customer</button>
       </router-link>
       <SearchCustomers
         :searchQuery="searchQuery"
         :filterType="filterType"
+        @fetch-customers="fetchCustomers"
         @set-filter="setFilter"
         @update-search-query="updateSearchQuery"
       />
+    </div>
+    <div class="mb-3">
+      <p>
+        {{ paginationData ? paginationData.count : this.customers.length }}
+        <strong>customers</strong> found.
+      </p>
     </div>
     <div class="table-responsive">
       <table class="table table-striped">
@@ -28,7 +35,7 @@
           </tr>
         </thead>
         <tbody class="align-middle">
-          <tr v-for="customer in filteredCustomers" :key="customer.id">
+          <tr v-for="customer in customers" :key="customer.id">
             <td>{{ customer.first_name }}</td>
             <td>{{ customer.last_name }}</td>
             <td>{{ customer.address }}</td>
@@ -50,6 +57,14 @@
           </tr>
         </tbody>
       </table>
+      <!-- Pagination -->
+      <div class="d-flex justify-content-center">
+        <Pagination
+          :current-page="paginationData.currentPage"
+          :total-pages="paginationData.totalPages"
+          @pagination-change-page="fetchCustomers"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -62,6 +77,7 @@ import { filters } from "../../utils/searchCustomersUtils.js";
 import { formatDate } from "../../utils/formatDate.js";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
 import { AkEdit } from "@kalimahapps/vue-icons";
+import Pagination from "../../components/Layout/Pagination";
 
 export default {
   name: "Customers",
@@ -69,6 +85,7 @@ export default {
     DeleteCustomer,
     SearchCustomers,
     AkEdit,
+    Pagination,
   },
   mixins: [axiosAuthMixin],
   data() {
@@ -76,6 +93,13 @@ export default {
       customers: [],
       searchQuery: "",
       filterType: "first_name",
+      paginationData: {
+        count: 1,
+        next: "",
+        previous: "",
+        currentPage: 1, // Add currentPage property
+        totalPages: 1,
+      },
     };
   },
   computed: {
@@ -98,6 +122,9 @@ export default {
           return this.customers;
       }
     },
+    totalCount() {
+      return this.paginationData ? this.paginationData.count : 0;
+    },
   },
   mounted() {
     this.fetchCustomers();
@@ -106,12 +133,25 @@ export default {
     formattedDate(isoDate) {
       return formatDate(isoDate);
     },
-    async fetchCustomers() {
+    async fetchCustomers(page = 1) {
       this.$store.commit("setIsLoading", true);
       await axios
-        .get("customers/")
+        .get("customers/", {
+          params: {
+            search: this.searchQuery,
+            filter_type: this.filterType,
+            page,
+          },
+        })
         .then((response) => {
-          this.customers = response.data;
+          this.customers = response.data.results;
+          this.paginationData = {
+            count: response.data.count,
+            next: response.data.next,
+            previous: response.data.previous,
+            currentPage: page, // Add currentPage property
+            totalPages: Math.ceil(response.data.count / 6),
+          };
         })
         .catch((error) => {
           console.error("Error fetching customers:", error);
