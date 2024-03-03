@@ -1,7 +1,12 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
     <div class="container-fluid">
-      <a class="navbar-brand fs-3" href="/dashboard">CRM</a>
+      <a
+        class="navbar-brand fs-3 btn btn-outline-success"
+        href="/dashboard"
+        style="border: none"
+        >CRM</a
+      >
       <button
         class="navbar-toggler"
         type="button"
@@ -15,16 +20,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item"></li>
-          <li class="nav-item">
-            <!--<a
-              class="nav-link active"
-              aria-current="page"
-              href="/dashboard/profile"
-              >My Account</a
-            >-->
+          <li class="nav-item me-3 btn btn-light">
+            <a class="nav-link active" aria-current="page" href="/dashboard"
+              >Home</a
+            >
           </li>
-          <li class="nav-item me-3">
+          <li class="nav-item me-3 btn btn-light">
             <a
               class="nav-link active"
               aria-current="page"
@@ -32,7 +33,7 @@
               >Customers</a
             >
           </li>
-          <li class="nav-item me-3">
+          <li class="nav-item me-3 btn btn-light">
             <a
               class="nav-link active"
               aria-current="page"
@@ -42,7 +43,7 @@
           </li>
           <li
             v-if="$store.state.user && $store.state.user.is_staff"
-            class="nav-item me-3"
+            class="nav-item me-3 btn btn-light"
           >
             <a
               class="nav-link active"
