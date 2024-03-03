@@ -17,7 +17,8 @@
               placeholder="Enter the service name..."
               class="form-control"
               required
-              pattern="[a-zA-Z]{1,25}"
+              minlength="1"
+              maxlength="25"
               oninvalid="this.setCustomValidity('Please enter the service\'s name.')"
               oninput="setCustomValidity('')"
             />
@@ -33,7 +34,8 @@
               id="serviceDescription"
               placeholder="Enter a description for your service..."
               class="form-control"
-              pattern="[a-zA-Z]{1,255}"
+              minlength="1"
+              maxlength="255"
               oninvalid="this.setCustomValidity('Please enter the service\'s description.')"
               oninput="setCustomValidity('')"
               rows="3"
