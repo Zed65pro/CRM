@@ -9,16 +9,25 @@ import AddCustomer from "@/views/customers/AddCustomer";
 import Customer from "@/views/customers/Customer";
 import UpdateCustomer from "@/views/customers/UpdateCustomer";
 import store from "@/store";
+import Dashboard from "@/views/Dashboard";
 
 const routes = [
   {
     path: "/:catchAll(.*)", // reroute undefined paths
-    redirect: "/dashboard/customers",
+    redirect: "/dashboard",
   },
   {
     path: "/login",
     name: "Login",
     component: Login,
+  },
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+    meta: {
+      requireLogin: true,
+    },
   },
   // {
   //   path: "/signup",
