@@ -15,8 +15,8 @@ module.exports = {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-unused-vars": "off",
+    "requireConfigFile": false,
     "vue/no-mutating-props": "off",
     "vue/multi-word-component-names": "off",
-    "requireConfigFile": false,
   },
 };
