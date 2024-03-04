@@ -1,9 +1,13 @@
-<!-- updateCustomer.vue -->
+<!-- UpdateCustomer.vue -->
+
 <template>
   <div class="container">
+    <!-- Page Title -->
     <h2 class="mb-4">Update Customer</h2>
+
+    <!-- Update Customer Form -->
     <form @submit.prevent="updateCustomer">
-      <!-- Add your form fields for updating customer details here -->
+      <!-- Form Fields for Updating Customer Details -->
       <div class="form-group">
         <label for="firstName">First Name</label>
         <input
@@ -34,27 +38,31 @@
 
       <div class="form-outline mb-4">
         <label class="form-label" for="address">City</label>
+        <!-- Select City Dropdown -->
         <select
           v-model="customer.address"
           id="address"
-          class="form-select form-select-sm"
+          class="form-select"
           autocomplete="true"
+          oninvalid="this.setCustomValidity('Please select a city.')"
+          oninput="setCustomValidity('')"
           required
         >
-          <option value="" disabled selected>Select a city</option>
-          <option value="Nablus">Nablus</option>
-          <option value="Haifa">Haifa</option>
-          <option value="Al-Khalil">Al-Khalil</option>
-          <option value="Ramallah">Ramallah</option>
-          <option value="Bethlehem">Bethlehem</option>
-          <option value="Tulkarem">Tulkarem</option>
-          <option value="Gaza">Gaza</option>
-          <option value="Jinen">Jinen</option>
+          <option value="" disabled>Select a city</option>
+          <option
+            v-for="city in cities"
+            :key="city"
+            :value="city"
+            :selected="city === customer.address"
+          >
+            {{ city }}
+          </option>
         </select>
         <div class="invalid-feedback">Please select a city.</div>
       </div>
 
       <div class="form-outline mb-4">
+        <!-- Phone Number Input with Prefix -->
         <label class="form-label" for="phone_number">Phone number</label>
         <div class="input-group">
           <span class="input-group-text">+970</span>
@@ -73,6 +81,7 @@
         </div>
       </div>
 
+      <!-- Submit Button -->
       <button type="submit" class="btn btn-primary mt-4">
         Update Customer
       </button>
@@ -90,6 +99,7 @@ export default {
   mixins: [axiosAuthMixin],
   data() {
     return {
+      // Customer object with initial values
       customer: {
         id: "",
         first_name: "",
@@ -97,29 +107,44 @@ export default {
         address: "",
         phone_number: "",
       },
+      cities: [
+        "Gaza",
+        "Nablus",
+        "Quds",
+        "Al-Khalil",
+        "Ramallah",
+        "Bethlehem",
+        "Tulkarem",
+        "Jinen",
+      ],
     };
   },
-  mounted() {
-    // Fetch existing customer details using axios
+  beforeMount() {
+    // Fetch existing customer details using axios on component mount
     this.fetchCustomerDetails();
   },
   methods: {
+    // Fetch customer details from the backend
     async fetchCustomerDetails() {
       this.$store.commit("setIsLoading", true);
       try {
         const response = await axios.get(`customers/${this.$route.params.id}`);
-        this.customer = response.data;
+        this.customer = { ...response.data };
       } catch (error) {
+        // Handle errors and show a toast message
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error fetching customer details:", error);
+      } finally {
+        this.$store.commit("setIsLoading", false);
       }
-      this.$store.commit("setIsLoading", false);
     },
+    // Update customer details on form submission
     async updateCustomer() {
       this.$store.commit("setIsLoading", true);
       try {
+        // Send a PUT request to update customer details
         const response = await axios.put(
           `customers/${this.$route.params.id}/`,
           this.customer
@@ -127,6 +152,7 @@ export default {
         // Optionally, you can redirect to the customer details page or perform other actions.
         this.$router.go(-1);
       } catch (error) {
+        // Handle different error scenarios and show appropriate toast messages
         if (error.response.status === 400) {
           toast.error("Phone number already in use.", {
             autoClose: 1000,

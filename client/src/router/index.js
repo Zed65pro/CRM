@@ -1,98 +1,87 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Login from "@/views/Auth/Login";
-import Signup from "@/views/Auth/Signup";
-import Home from "@/views/Home";
-import Services from "@/views/services/Services";
-import AddService from "@/views/services/AddService";
-import Customers from "@/views/customers/Customers";
-import AddCustomer from "@/views/customers/AddCustomer";
-import Customer from "@/views/customers/Customer";
-import UpdateCustomer from "@/views/customers/UpdateCustomer";
 import store from "@/store";
-import Dashboard from "@/views/Dashboard";
 
 const routes = [
   {
-    path: "/:catchAll(.*)", // reroute undefined paths
+    path: "/:catchAll(.*)", // reroute undefined paths to dashboard
     redirect: "/dashboard",
   },
   {
-    path: "/login",
+    path: "/login", //LOGIN PATH
     name: "Login",
-    component: Login,
+    component: () =>
+      import(/* webpackChunkName: "login" */ "@/views/Auth/Login"),
   },
   {
-    path: "/dashboard",
+    path: "/dashboard", // DASHBOARD PATH
     name: "Dashboard",
-    component: Dashboard,
+    component: () =>
+      import(/* webpackChunkName: "dashboard" */ "@/views/Dashboard"),
     meta: {
       requireLogin: true,
     },
   },
-  // {
-  //   path: "/signup",
-  //   name: "Signup",
-  //   component: Signup,
-  // },
   {
-    path: "/dashboard/services",
+    path: "/dashboard/services", // DISPLAY SERVICES PATH
     name: "Services",
-    component: Services,
+    component: () =>
+      import(/* webpackChunkName: "services" */ "@/views/services/Services"),
     meta: {
       requireLogin: true,
     },
   },
   {
-    path: "/dashboard/add-service",
+    path: "/dashboard/add-service", // ADD A SERVICE PATH
     name: "AddService",
-    component: AddService,
+    component: () =>
+      import(
+        /* webpackChunkName: "add-service" */ "@/views/services/AddService"
+      ),
     meta: {
       requireLogin: true,
       requireAdmin: true,
     },
   },
   {
-    path: "/dashboard/customers",
+    path: "/dashboard/customers", // DISPLAY CUSTOMERS PATH
     name: "Customers",
-    component: Customers,
+    component: () =>
+      import(/* webpackChunkName: "customers" */ "@/views/customers/Customers"),
     meta: {
       requireLogin: true,
     },
   },
   {
-    path: "/dashboard/add-customer",
+    path: "/dashboard/add-customer", // ADD A CUSTOMER PATH
     name: "AddCustomer",
-    component: AddCustomer,
+    component: () =>
+      import(
+        /* webpackChunkName: "add-customer" */ "@/views/customers/AddCustomer"
+      ),
     meta: {
       requireLogin: true,
     },
   },
   {
-    path: "/dashboard/customers/:id",
+    path: "/dashboard/customers/:id", // SHOW CUSTOMER PROFILE PATH
     name: "Customer",
-    component: Customer,
+    component: () =>
+      import(/* webpackChunkName: "customer" */ "@/views/customers/Customer"),
     meta: {
       requireLogin: true,
     },
   },
   {
-    path: "/dashboard/updateCustomers/:id",
+    path: "/dashboard/updateCustomers/:id", // UPDATE CUSTOMER PATH
     name: "UpdateCustomer",
-    component: UpdateCustomer,
+    component: () =>
+      import(
+        /* webpackChunkName: "update-customer" */ "@/views/customers/UpdateCustomer"
+      ),
     meta: {
       requireLogin: true,
     },
   },
-
-  // {
-  //   path: "/about",
-  //   name: "about",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
-  // },
 ];
 
 const router = createRouter({
@@ -101,16 +90,18 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (
-    to.matched.some((m) => m.meta.requireLogin) &&
-    !store.state.isAuthenticated
-  ) {
+  const { isAuthenticated, user } = store.state;
+  const requiresLogin = to.matched.some((route) => route.meta.requireLogin);
+  const requiresAdmin = to.matched.some((route) => route.meta.requireAdmin);
+
+  if (requiresLogin && !isAuthenticated) {
+    //If employee is unauthenticated redirect to login page
     next({ name: "Login" });
-  } else if (
-    to.matched.some((m) => m.meta.requireAdmin) &&
-    !store.state.user.is_staff
-  ) {
+  } else if (requiresAdmin && !user.is_staff) {
+    // If auth employee tried to enter a page only ment for admins then he is redirected to dashboard
     next({ name: "Dashboard" });
-  } else next();
+  } else {
+    next();
+  }
 });
 export default router;

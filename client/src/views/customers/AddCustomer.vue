@@ -2,12 +2,15 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-6">
+        <!-- Heading and Subheading -->
         <div class="text-center mb-4">
           <h2 class="display-4 text-success">Add Customer</h2>
-          <p class="lead">Provide details to add a new customer..</p>
+          <p class="lead">Provide details to add a new customer.</p>
         </div>
+
+        <!-- Customer Form -->
         <form @submit.prevent="submitForm">
-          <!-- Customer Name input -->
+          <!-- Customer Name inputs -->
           <div class="form-outline mb-4">
             <label class="form-label" for="first_name">First Name</label>
             <input
@@ -22,7 +25,8 @@
               required
             />
           </div>
-          <!-- Last name input -->
+
+          <!-- Last Name input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="last_name">Last Name</label>
             <input
@@ -45,22 +49,18 @@
               v-model="address"
               id="address"
               class="form-select form-select-sm"
+              oninvalid="this.setCustomValidity('Please select a city.')"
+              oninput="setCustomValidity('')"
               required
             >
               <option value="" disabled selected>Select a city</option>
-              <option value="Nablus">Nablus</option>
-              <option value="Haifa">Haifa</option>
-              <option value="Al-Khalil">Al-Khalil</option>
-              <option value="Ramallah">Ramallah</option>
-              <option value="Bethlehem">Bethlehem</option>
-              <option value="Tulkarem">Tulkarem</option>
-              <option value="Gaza">Gaza</option>
-              <option value="Jinen">Jinen</option>
+              <option v-for="city in cities" :key="city" :value="city">
+                {{ city }}
+              </option>
             </select>
-            <div class="invalid-feedback">Please select a city.</div>
           </div>
 
-          <!-- Phone number input -->
+          <!-- Phone Number input -->
           <div class="form-outline mb-4">
             <label class="form-label" for="phone_number">Phone number</label>
             <div class="input-group">
@@ -69,7 +69,7 @@
                 v-model="phone_number"
                 type="tel"
                 id="phone_number"
-                placeholder="i.e 551936142"
+                placeholder="e.g., 551936142"
                 pattern="[0-9]{9}"
                 oninvalid="this.setCustomValidity('Please enter a valid phone number.')"
                 oninput="setCustomValidity('')"
@@ -107,14 +107,25 @@ export default {
       address: "",
       phone_number: null,
       isSubmitForm: false,
+      cities: [
+        "Gaza",
+        "Nablus",
+        "Quds",
+        "Al-Khalil",
+        "Ramallah",
+        "Bethlehem",
+        "Tulkarem",
+        "Jinen",
+      ],
     };
   },
   methods: {
     async submitForm() {
-      console.log(this.isSubmitForm);
+      // Set a flag to indicate form submission is in progress
       this.isSubmitForm = true;
       this.$store.commit("setIsLoading", true);
 
+      // Create a new customer object with the form data
       const newCustomer = {
         first_name: this.first_name,
         last_name: this.last_name,
@@ -122,29 +133,34 @@ export default {
         phone_number: this.phone_number,
       };
 
-      await axios
-        .post("customers/", newCustomer)
-        .then((response) => {
-          console.log("Service added successfully:", response.data);
-          toast.success("Service added successfuly!", {
+      try {
+        // Make a POST request to add the new customer
+        const response = await axios.post("customers/", newCustomer);
+
+        console.log("Customer added successfully:", response.data);
+        toast.success("Customer added successfully!", {
+          autoClose: 1000,
+        });
+
+        // Redirect to the customers page
+        this.$router.push("/dashboard/customers");
+      } catch (error) {
+        // Handle different error scenarios
+        if (error.response && error.response.status === 400) {
+          toast.error("Phone number already in use.", {
             autoClose: 1000,
           });
-          this.$router.push("/dashboard/customers");
-          // Optionally, you can redirect to the services page or perform other actions.
-        })
-        .catch((error) => {
-          if (error.response.status === 400) {
-            toast.error("Phone number already in use.", {
-              autoClose: 1000,
-            });
-          } else {
-            toast.error("Something went wrong. Please try again.", {
-              autoClose: 1000,
-            });
-          }
-          console.error("Error adding customer:", error);
-        });
-      this.$store.commit("setIsLoading", false);
+        } else {
+          toast.error("Something went wrong. Please try again.", {
+            autoClose: 1000,
+          });
+        }
+        console.error("Error adding customer:", error);
+      } finally {
+        // Reset the flag and set loading state to false
+        this.isSubmitForm = false;
+        this.$store.commit("setIsLoading", false);
+      }
     },
   },
 };

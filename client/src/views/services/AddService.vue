@@ -2,10 +2,13 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-6">
+        <!-- Heading and Subheading -->
         <div class="text-center mb-4">
           <h2 class="display-4 text-success">Add Service</h2>
           <p class="lead">Provide details for your new service.</p>
         </div>
+
+        <!-- Service Form -->
         <form @submit.prevent="submitForm">
           <!-- Service Name input -->
           <div class="form-outline mb-4">
@@ -95,6 +98,7 @@
 import axios from "axios";
 import { toast } from "vue3-toastify";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
+
 export default {
   name: "AddService",
   mixins: [axiosAuthMixin],
@@ -110,6 +114,7 @@ export default {
     async submitForm() {
       this.$store.commit("setIsLoading", true);
 
+      // Create a new service object with the form data
       const newService = {
         name: this.serviceName,
         description: this.serviceDescription,
@@ -117,23 +122,26 @@ export default {
         duration_months: this.serviceDuration,
       };
 
-      await axios
-        .post("services/", newService)
-        .then((response) => {
-          console.log("Service added successfully:", response.data);
-          toast.success("Service added successfuly!", {
-            autoClose: 1000,
-          });
-          this.$router.push("/dashboard/services");
-          // Optionally, you can redirect to the services page or perform other actions.
-        })
-        .catch((error) => {
-          toast.error("Something went wrong. Please try again.", {
-            autoClose: 1000,
-          });
-          console.error("Error adding service:", error);
+      try {
+        // Make a POST request to add the new service
+        const response = await axios.post("services/", newService);
+
+        toast.success("Service added successfully!", {
+          autoClose: 1000,
         });
-      this.$store.commit("setIsLoading", false);
+
+        // Redirect to the services page
+        this.$router.push("/dashboard/services");
+      } catch (error) {
+        // Handle errors and show a toast message
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
+        });
+        console.error("Error adding service:", error);
+      } finally {
+        // Set loading state to false
+        this.$store.commit("setIsLoading", false);
+      }
     },
   },
 };

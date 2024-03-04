@@ -3,10 +3,12 @@
 <template>
   <div class="container-fluid">
     <div class="container">
+      <!-- Page Title and Add Customer Button -->
       <h1 class="mb-3">Customer List</h1>
       <router-link :to="{ path: '/dashboard/add-customer' }">
         <button type="button" class="btn btn-success mb-4">Add Customer</button>
       </router-link>
+      <!-- Search Customers Component -->
       <SearchCustomers
         :searchQuery="searchQuery"
         :filterType="filterType"
@@ -15,12 +17,16 @@
         @update-search-query="updateSearchQuery"
       />
     </div>
+
+    <!-- Display Total Number of Customers -->
     <div class="mb-3">
       <p>
         {{ paginationData ? paginationData.count : this.customers.length }}
         <strong>customers</strong> found.
       </p>
     </div>
+
+    <!-- Table of Customer Details -->
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -35,6 +41,7 @@
           </tr>
         </thead>
         <tbody class="align-middle">
+          <!-- Loop through customers and display details -->
           <tr v-for="customer in customers" :key="customer.id">
             <td>{{ customer.first_name }}</td>
             <td>{{ customer.last_name }}</td>
@@ -43,6 +50,7 @@
             <td>{{ formattedDate(customer.created_at) }}</td>
             <td>@{{ customer.created_by.username }}</td>
             <td>
+              <!-- Edit and Delete buttons for each customer -->
               <router-link
                 :to="{ name: 'Customer', params: { id: customer.id } }"
                 class="btn btn-primary btn-with-icon btn-sm me-1"
@@ -57,7 +65,8 @@
           </tr>
         </tbody>
       </table>
-      <!-- Pagination -->
+
+      <!-- Pagination Component -->
       <div class="d-flex justify-content-center">
         <Pagination
           :current-page="paginationData.currentPage"
@@ -108,40 +117,47 @@ export default {
     },
   },
   mounted() {
+    // Fetch customers on component mount
     this.fetchCustomers();
   },
   methods: {
+    // Format ISO date to a more readable format
     formattedDate(isoDate) {
       return formatDate(isoDate);
     },
+    // Fetch customers from the backend with optional page parameter
     async fetchCustomers(page = 1) {
       this.$store.commit("setIsLoading", true);
-      await axios
-        .get("customers/", {
+      try {
+        // Use axios to fetch customers with search, filter, and pagination parameters
+        const response = await axios.get("customers/", {
           params: {
             search: this.searchQuery,
             filter_type: this.filterType,
             page,
           },
-        })
-        .then((response) => {
-          this.customers = response.data.results;
-          this.paginationData = {
-            count: response.data.count,
-            next: response.data.next,
-            previous: response.data.previous,
-            currentPage: page, // Add currentPage property
-            totalPages: Math.ceil(response.data.count / 6),
-          };
-        })
-        .catch((error) => {
-          console.error("Error fetching customers:", error);
         });
+        // Update component data with fetched customers and pagination information
+        this.customers = response.data.results;
+        this.paginationData = {
+          count: response.data.count,
+          next: response.data.next,
+          previous: response.data.previous,
+          currentPage: page, // Add currentPage property
+          totalPages: Math.ceil(response.data.count / 6), // Assuming 6 customers per page
+        };
+      } catch (error) {
+        // Handle errors and log them to the console
+        console.error("Error fetching customers:", error);
+      }
+      // Unset loading state
       this.$store.commit("setIsLoading", false);
     },
+    // Set the filter type for searching customers
     setFilter(filterType) {
       this.filterType = filterType;
     },
+    // Update the search query for searching customers
     updateSearchQuery(value) {
       this.searchQuery = value;
     },

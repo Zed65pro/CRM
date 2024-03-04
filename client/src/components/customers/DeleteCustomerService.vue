@@ -1,6 +1,7 @@
 <!-- DeleteService.vue -->
 <template>
   <div>
+    <!-- Delete button -->
     <button
       @click="showConfirmation"
       class="btn btn-danger btn-with-icon btn-sm"
@@ -8,8 +9,10 @@
       <BsTrashFill style="font-size: 22px" />
     </button>
 
-    <!-- Confirmation Popup Modal -->
+    <!-- Dark overlay when confirmation popup is displayed -->
     <div v-if="showPopup" class="overlay" @click="cancelDelete"></div>
+
+    <!-- Confirmation Popup Modal -->
     <div
       v-if="showPopup"
       class="modal fade show"
@@ -18,6 +21,7 @@
     >
       <div class="modal-dialog" @click.stop>
         <div class="modal-content">
+          <!-- Modal Header -->
           <div class="modal-header">
             <h5 class="modal-title">Delete Service</h5>
             <button
@@ -27,16 +31,21 @@
               aria-label="Close"
             ></button>
           </div>
+
+          <!-- Modal Body -->
           <div class="modal-body">
             <p>
               Are you sure you want to remove this service from the customer?
             </p>
           </div>
+
+          <!-- Modal Footer with Confirm and Cancel buttons -->
           <div class="modal-footer">
             <!-- Confirm deletion button -->
             <button @click="confirmDelete" class="btn btn-danger">
               Delete
             </button>
+
             <!-- Cancel button to close the popup -->
             <button @click="cancelDelete" class="btn btn-secondary">
               Cancel
@@ -68,9 +77,16 @@ export default {
     };
   },
   methods: {
+    /**
+     * Display the confirmation popup.
+     */
     showConfirmation() {
       this.showPopup = true;
     },
+
+    /**
+     * Confirm the deletion and send a PATCH request to disassociate the service from the customer.
+     */
     async confirmDelete() {
       this.$store.commit("setIsLoading", true);
       try {
@@ -78,18 +94,27 @@ export default {
         await axios.patch(
           `customers/${this.$route.params.id}/remove-service/${this.service_id}`
         );
+
+        // Fetch updated customer details
         this.fetchCustomerDetails(this.$route.params.id);
+
         // Close the popup after disassociation
         this.showPopup = false;
+
         // Optionally, you can update the local data or perform other actions
       } catch (error) {
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error removing service from customer:", error);
+      } finally {
+        this.$store.commit("setIsLoading", false);
       }
-      this.$store.commit("setIsLoading", false);
     },
+
+    /**
+     * Cancel the deletion and close the confirmation popup.
+     */
     cancelDelete() {
       // Close the popup if canceled
       this.showPopup = false;

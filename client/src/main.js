@@ -7,7 +7,7 @@ import router from "./router";
 import store from "./store";
 import axios from "axios";
 
-// Inject the missing feature flag
+// Inject the missing feature flag to avoid the warning in console
 window.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ = false;
 
 axios.defaults.baseURL = process.env.VUE_APP_API_BASE_URL;

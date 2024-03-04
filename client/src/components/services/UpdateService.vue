@@ -1,11 +1,15 @@
 <template>
+  <!-- Edit Service Button -->
   <button
     @click="openEditModal(service)"
     class="btn btn-primary btn-sm me-1 mb-1 btn-with-icon"
   >
     <AkEdit class="icon" style="font-size: 18px" />
   </button>
+
+  <!-- Overlay for the Edit Service Modal -->
   <div v-if="showEditModal" class="overlay" @click="closeEditModal"></div>
+
   <!-- Edit Service Modal -->
   <div
     v-if="showEditModal"
@@ -17,8 +21,10 @@
     style="display: block"
     @click="closeEditModal"
   >
+    <!-- Modal Dialog -->
     <div class="modal-dialog modal-dialog-centered modal-lg" @click.stop>
       <div class="modal-content">
+        <!-- Modal Header -->
         <div class="modal-header">
           <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
           <button
@@ -28,9 +34,11 @@
             aria-label="Close"
           ></button>
         </div>
+
+        <!-- Modal Body with Edit Form -->
         <div class="modal-body">
-          <!-- Service Edit Form -->
           <form @submit.prevent="submitEditForm">
+            <!-- Service Name Input -->
             <div class="mb-3">
               <label for="editServiceName" class="form-label"
                 >Service Name</label
@@ -47,6 +55,8 @@
                 oninput="setCustomValidity('')"
               />
             </div>
+
+            <!-- Description Textarea -->
             <div class="mb-3">
               <label for="editServiceDescription" class="form-label"
                 >Description</label
@@ -62,6 +72,8 @@
                 required
               ></textarea>
             </div>
+
+            <!-- Price Input -->
             <div class="mb-3">
               <label for="editServicePrice" class="form-label">Price</label>
               <input
@@ -77,6 +89,8 @@
                 required
               />
             </div>
+
+            <!-- Duration Input -->
             <div class="mb-3">
               <label for="editServiceDuration" class="form-label"
                 >Duration (in months)</label
@@ -88,13 +102,15 @@
                 id="editServiceDuration"
                 min="1"
                 max="120"
-                oninvalid="this.setCustomValidity('Please enter a valid service duration. upto a max of 10 years i.e 120 months.')"
+                oninvalid="this.setCustomValidity('Please enter a valid service duration. Up to a max of 10 years i.e., 120 months.')"
                 oninput="setCustomValidity('')"
                 required
               />
             </div>
+
             <!-- Add other form fields as needed -->
 
+            <!-- Save Changes Button -->
             <button type="submit" class="btn btn-primary">Save Changes</button>
           </form>
         </div>
@@ -123,30 +139,38 @@ export default {
     };
   },
   methods: {
+    // Open the Edit Service Modal
     openEditModal(service) {
       this.showEditModal = true;
     },
 
+    // Close the Edit Service Modal
     closeEditModal() {
       this.showEditModal = false;
     },
 
+    // Submit the Edit Service Form
     async submitEditForm() {
       this.$store.commit("setIsLoading", true);
       try {
+        // Send a PUT request to update the service
         const response = await axios.put(
           `services/${this.selectedService.id}/`,
           this.selectedService
         );
+        // Emit the event to notify parent components about the update
         this.$emit("update-services", response.data);
 
+        // Close the Edit Service Modal
         this.closeEditModal();
       } catch (error) {
+        // Handle errors and show a toast message
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error updating service:", error);
       }
+      // Set loading state to false after the operation
       this.$store.commit("setIsLoading", false);
     },
   },

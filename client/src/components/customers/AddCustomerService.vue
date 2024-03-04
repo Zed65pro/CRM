@@ -1,4 +1,3 @@
-<!-- AddService.vue -->
 <template>
   <div class="container" style="max-width: 450px">
     <!-- Dropdown menu to select a service -->
@@ -37,6 +36,7 @@
 <script>
 import axios from "axios";
 import { toast } from "vue3-toastify";
+
 export default {
   name: "AddCustomerService",
   props: {
@@ -53,6 +53,9 @@ export default {
     this.fetchAllServices();
   },
   methods: {
+    /**
+     * Fetch all available services from the backend.
+     */
     async fetchAllServices() {
       this.$store.commit("setIsLoading", true);
 
@@ -61,25 +64,28 @@ export default {
         this.allServices = response.data;
       } catch (error) {
         console.error("Error fetching services:", error);
+      } finally {
+        this.$store.commit("setIsLoading", false);
       }
-      this.$store.commit("setIsLoading", false);
     },
+
+    /**
+     * Add the selected service to the customer's services list.
+     */
     async addService() {
+      // Validate selected service
       if (!this.selectedService) {
         toast.error("Please select a service.", {
           autoClose: 1000,
         });
         return;
       }
-      if (this.selectedService === null || this.selectedService === "") {
-        toast.error("Please select a service.", {
-          autoClose: 1000,
-        });
-        return;
-      }
+
+      // Check if the service is already added to the customer
       const isValidService = this.customer.services.some(
         (service) => service.id === this.selectedService
       );
+
       if (isValidService) {
         // Display an error message or handle it as needed
         console.error("Invalid service selected.");
@@ -89,6 +95,7 @@ export default {
         return;
       }
 
+      // Add the service to the customer
       this.$store.commit("setIsLoading", true);
       try {
         await axios.patch(
@@ -100,8 +107,9 @@ export default {
           autoClose: 1000,
         });
         console.error("Error adding service to customer:", error);
+      } finally {
+        this.$store.commit("setIsLoading", false);
       }
-      this.$store.commit("setIsLoading", false);
     },
   },
 };

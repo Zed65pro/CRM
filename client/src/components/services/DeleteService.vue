@@ -60,27 +60,36 @@ export default {
     };
   },
   methods: {
+    // Open the delete modal
     openDeleteModal(service) {
       this.showDeleteModal = true;
     },
 
+    // Close the delete modal
     closeDeleteModal() {
       this.showDeleteModal = false;
     },
+
+    // Confirm the deletion of the service
     async confirmDelete() {
       this.$store.commit("setIsLoading", true);
       try {
+        // Send a DELETE request to delete the service
         const response = await axios.delete(
           `services/${this.selectedService.id}/`
         );
+        // Emit the event to notify parent components about the deletion
         this.$emit("delete-services", this.selectedService.id);
+        // Close the delete modal
         this.closeDeleteModal();
       } catch (error) {
+        // Handle errors and show a toast message
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error deleting service:", error);
       }
+      // Set loading state to false after the operation
       this.$store.commit("setIsLoading", false);
     },
   },

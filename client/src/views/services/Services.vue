@@ -1,8 +1,9 @@
 <template>
   <div class="container-fluid">
+    <!-- Page Title -->
     <h2 class="mb-3">List of Services</h2>
 
-    <!-- Add Service Button -->
+    <!-- Add Service Button (Visible to Staff only) -->
     <router-link
       :to="{ name: 'AddService' }"
       v-if="$store.state.user && $store.state.user.is_staff"
@@ -13,6 +14,7 @@
     <!-- Search Bar -->
     <div class="container">
       <div class="mb-3">
+        <!-- Search input -->
         <input
           v-model="searchQuery"
           type="text"
@@ -25,8 +27,9 @@
       </div>
     </div>
     <div class="mb-3">
+      <!-- Display the number of services found -->
       <p>
-        {{ paginationData ? paginationData.count : this.services.length }}
+        {{ paginationData ? paginationData.count : filteredServices.length }}
         <strong>services</strong> found.
       </p>
     </div>
@@ -35,6 +38,7 @@
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
+          <!-- Table headers -->
           <tr>
             <th>Name</th>
             <th>Price</th>
@@ -47,6 +51,7 @@
           </tr>
         </thead>
         <tbody>
+          <!-- Loop through services and display in the table -->
           <tr v-for="service in services" :key="service.id">
             <td>{{ service.name }}</td>
             <td>{{ service.price }}</td>
@@ -54,13 +59,13 @@
             <td>{{ formattedDate(service.created_at) }}</td>
             <td>@{{ service.created_by.username }}</td>
             <td v-if="$store.state.user && $store.state.user.is_staff">
+              <!-- Component for updating a service -->
               <UpdateService
-                v-if="$store.state.user && $store.state.user.is_staff"
                 :selectedService="{ ...service }"
                 @update-services="updateServices"
               />
+              <!-- Component for deleting a service -->
               <DeleteService
-                v-if="$store.state.user && $store.state.user.is_staff"
                 :selectedService="{ ...service }"
                 @delete-services="deleteServices"
               />
@@ -68,7 +73,7 @@
           </tr>
         </tbody>
       </table>
-      <!-- Pagination -->
+      <!-- Pagination Component -->
       <div class="d-flex justify-content-center">
         <Pagination
           :current-page="paginationData.currentPage"
@@ -82,12 +87,12 @@
 
 <script>
 import axios from "axios";
-import { formatDate } from "../../utils/formatDate.js";
 import UpdateService from "../../components/services/UpdateService";
 import DeleteService from "../../components/services/DeleteService";
 import axiosAuthMixin from "../../mixins/axiosAuthMixin.js";
-import { toast } from "vue3-toastify";
 import Pagination from "../../components/Layout/Pagination";
+import { toast } from "vue3-toastify";
+import { formatDate } from "../../utils/formatDate.js";
 
 export default {
   name: "Services",
@@ -110,62 +115,55 @@ export default {
       },
     };
   },
-  computed: {
-    filteredServices() {
-      return this.services.filter(
-        (service) =>
-          service.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          service.description
-            .toLowerCase()
-            .includes(this.searchQuery.toLowerCase())
-      );
-    },
-  },
   mounted() {
+    // Fetch services on component mount
     this.fetchServices();
   },
   methods: {
+    // Format ISO date to a human-readable format
     formattedDate(isoDate) {
       return formatDate(isoDate);
     },
+    // Fetch services from the server
     async fetchServices(page = 1) {
       this.$store.commit("setIsLoading", true);
       try {
+        // Make API request to fetch services
         const response = await axios.get("services/", {
           params: {
             search: this.searchQuery,
             page,
           },
         });
+        // Update component data with fetched services and pagination info
         this.services = response.data.results;
         this.paginationData = {
           count: response.data.count,
           next: response.data.next,
           previous: response.data.previous,
           currentPage: page, // Add currentPage property
-          totalPages: Math.ceil(response.data.count / 6),
+          totalPages: Math.ceil(response.data.count / 6), // 6 is a magic number yes, should MAKE constant, its the limit of the table
         };
       } catch (error) {
+        // Handle errors and show a toast message
         toast.error("Something went wrong. Please try again.", {
           autoClose: 1000,
         });
         console.error("Error fetching services:", error);
+      } finally {
+        // Set loading state to false
+        this.$store.commit("setIsLoading", false);
       }
-      this.$store.commit("setIsLoading", false);
     },
+    // Update services array after a service is updated
     updateServices(service) {
-      // Find the index of the modified service in this.services and update it
-      const index = this.services.findIndex(
-        (service) => service.id === service.id
-      );
-
-      // Update the array element directly
+      const index = this.services.findIndex((s) => s.id === service.id);
       if (index !== -1) {
         this.services[index] = service;
       }
     },
+    // Fetch services after a service is deleted
     deleteServices(service_id) {
-      // Find the index of the modified service in this.services and update it
       if (this.services.length === 1 && this.paginationData.currentPage > 1)
         this.fetchServices(this.paginationData.currentPage - 1);
       else {

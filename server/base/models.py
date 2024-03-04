@@ -11,7 +11,7 @@ class Service(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     class Meta:
-        ordering = ('-updated_at','-created_at')
+        ordering = ['-created_at']
     def __str__(self):
         return self.name
 
@@ -25,5 +25,7 @@ class Customer(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     services = models.ManyToManyField(Service, related_name='customers')
 
+    class Meta:
+        ordering = ['-created_at']
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

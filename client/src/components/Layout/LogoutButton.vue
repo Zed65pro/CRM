@@ -6,28 +6,41 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "LogoutButton",
+
   methods: {
+    /**
+     * Handles the logout process.
+     */
     async logout() {
+      // Set loading state to true
       this.$store.commit("setIsLoading", true);
 
-      await axios
-        .post("token/logout")
-        .then((response) => {
-          console.log("LOGGED OUT");
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      try {
+        // Send POST request to logout
+        await axios.post("token/logout");
+        console.log("LOGGED OUT");
 
-      this.$store.commit("removeToken");
-      this.$store.commit("removeUser");
-      axios.defaults.headers.common["Authorization"] = "";
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      this.$router.push("/login");
-      this.$store.commit("setIsLoading", false);
+        // Remove token and user from the store and local storage
+        this.$store.commit("removeToken");
+        this.$store.commit("removeUser");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+
+        // Clear authorization header
+        axios.defaults.headers.common["Authorization"] = "";
+
+        // Redirect to login page
+        this.$router.push("/login");
+      } catch (error) {
+        // Handle errors
+        console.error("Logout error:", error);
+      } finally {
+        // Set loading state back to false
+        this.$store.commit("setIsLoading", false);
+      }
     },
   },
 };

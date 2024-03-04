@@ -7,6 +7,7 @@
       <div class="card-body">
         <h5 class="card-title">Customer Details</h5>
 
+        <!-- Display basic customer information -->
         <div class="row mb-3">
           <div class="col-md-6">
             <p class="fw-bold mb-2">
@@ -27,6 +28,7 @@
           </div>
         </div>
 
+        <!-- Edit and Delete buttons for customer -->
         <router-link
           :to="{
             name: 'UpdateCustomer',
@@ -36,19 +38,19 @@
         >
           <AkEdit class="icon" style="font-size: 22px" />
         </router-link>
-
         <DeleteCustomer :customer="customer" />
         <!-- Add more customer details as needed -->
       </div>
     </div>
+
     <!-- Button to Add New Service -->
     <AddCustomerService
       v-if="customer"
       :fetchCustomerDetails="fetchCustomerDetails"
       :customer="customer"
     />
-    <!-- Display services associated with the customer -->
 
+    <!-- Display services associated with the customer -->
     <h2
       v-if="customer && customer.services && !customer.services.length"
       class="mt-5"
@@ -57,6 +59,7 @@
     </h2>
     <div v-else-if="customer">
       <h3 class="mt-4">Services</h3>
+      <!-- Display services in a table -->
       <table class="table table-striped text-center">
         <thead>
           <tr>
@@ -70,6 +73,7 @@
           </tr>
         </thead>
         <tbody class="align-middle">
+          <!-- Loop through services and display details -->
           <tr v-for="service in customer.services" :key="service.id">
             <td>{{ service.id }}</td>
             <td>{{ service.name }}</td>
@@ -77,6 +81,7 @@
             <td>{{ service.price }}</td>
             <td>{{ service.duration_months }}</td>
             <td>
+              <!-- Delete button for each service -->
               <DeleteCustomerService
                 :service_id="service.id"
                 :fetchCustomerDetails="fetchCustomerDetails"
@@ -87,6 +92,8 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Additional section for MANAGEMENT++ -->
     <h3 v-if="customer">MANAGEMENT++</h3>
   </div>
 </template>
@@ -121,19 +128,21 @@ export default {
   },
   methods: {
     async fetchCustomerDetails(customerId) {
+      // Set loading state
       this.$store.commit("setIsLoading", true);
-      await axios
-        .get(`customers/${customerId}/`)
-        .then((response) => {
-          this.customer = response.data;
-        })
-        .catch((error) => {
-          this.customer = null;
-          toast.error("Something went wrong. Please try again.", {
-            autoClose: 1000,
-          });
-          console.error("Error fetching customer details:", error);
+      try {
+        // Fetch customer details from the backend
+        const response = await axios.get(`customers/${customerId}/`);
+        this.customer = response.data;
+      } catch (error) {
+        // Handle errors and display a toast message
+        this.customer = null;
+        toast.error("Something went wrong. Please try again.", {
+          autoClose: 1000,
         });
+        console.error("Error fetching customer details:", error);
+      }
+      // Unset loading state
       this.$store.commit("setIsLoading", false);
     },
   },

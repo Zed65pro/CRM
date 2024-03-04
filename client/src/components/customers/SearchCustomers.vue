@@ -28,6 +28,7 @@
           Filter
         </button>
         <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+          <!-- Filter options -->
           <li
             :class="{ active: filterType === 'first_name' }"
             @click="setFilter('first_name')"
@@ -42,7 +43,6 @@
           >
             Search by Last Name
           </li>
-
           <li
             :class="{ active: filterType === 'phone_number' }"
             @click="setFilter('phone_number')"
@@ -78,9 +78,17 @@ export default {
   },
   emits: ["fetch-customers", "set-filter", "update-search-query"],
   methods: {
+    /**
+     * Emit the "set-filter" event when a filter type is selected.
+     * @param {String} filterType - The selected filter type.
+     */
     setFilter(filterType) {
       this.$emit("set-filter", filterType);
     },
+
+    /**
+     * Emit the "fetch-customers" event when the search input is updated.
+     */
     fetchCustomers() {
       this.$emit("fetch-customers");
     },

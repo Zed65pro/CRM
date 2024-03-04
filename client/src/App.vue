@@ -18,18 +18,9 @@ export default {
   beforeCreate() {
     this.$store.commit("initializeStore");
 
-    if (this.$store.state.token) {
+    if (this.$store.state.token)
       axios.defaults.headers.common["Authorization"] =
         "Token" + this.$store.state.token;
-      {
-        /* this.$router.push("/dashboard"); */
-      }
-    } else {
-      axios.defaults.headers.common["Authorization"] = "";
-      {
-        /* this.$router.push("/login"); */
-      }
-    }
   },
 };
 </script>
