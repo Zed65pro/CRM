@@ -8,8 +8,11 @@ from .models import Customer, Service #models
 from .serializers import CustomerSerializer, ServiceSerializer, UserSerializer  #serializers
 from django.contrib.auth.decorators import login_required # decorator to check authentication
 from django.views.decorators.csrf import csrf_exempt # to remove crsf(cross site request forgery protection) which is disadvantage but we have to do here
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-# The following views do not include pagination yet.
+# Custom pagination class
+class CustomPageNumberPagination:
+    page_size = 6
 
 # Retrieve current user view
 class CurrentUserView(View):
@@ -38,6 +41,16 @@ class CustomerListCreateView(View):
             field = field_mapping.get(filter_type,None)
             if field:
                 queryset = queryset.filter(Q(**{field: search_param}))
+        
+        # Implementing Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(queryset, CustomPageNumberPagination.page_size)
+        try:
+            customers = paginator.page(page)
+        except PageNotAnInteger:
+            customers = paginator.page(1)
+        except EmptyPage:
+            customers = paginator.page(paginator.num_pages)
 
         serializer = CustomerSerializer(queryset,many=True)
         return JsonResponse(serializer.data)
@@ -95,6 +108,16 @@ class ServiceListCreateView(View):
 
         if search_param:
             queryset = queryset.filter(Q(name__icontains=search_param))
+
+        # Implementing Pagination
+        page = request.GET.get('page', 1)
+        paginator = Paginator(queryset, CustomPageNumberPagination.page_size)
+        try:
+            services = paginator.page(page)
+        except PageNotAnInteger:
+            services = paginator.page(1)
+        except EmptyPage:
+            services = paginator.page(paginator.num_pages)
 
         serializer = ServiceSerializer(queryset,many=True)
         return JsonResponse(serializer.data)
