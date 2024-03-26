@@ -79,6 +79,7 @@ export default {
   mixins: [axiosAuthMixin],
   mounted() {
     // Fancy character rendering effect
+    document.title = "CRM | Dashboard";
     this.animateWelcomeMessage();
   },
   methods: {

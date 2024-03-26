@@ -117,6 +117,7 @@ export default {
   },
   mounted() {
     // Fetch services on component mount
+    document.title = "CRM | Services";
     this.fetchServices();
   },
   methods: {

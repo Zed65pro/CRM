@@ -161,6 +161,7 @@ export default {
   },
   mounted() {
     // Your mounted hook code here
+    document.title = "CRM | Login";
     if (localStorage.getItem("token")) {
       this.$router.push({ name: "Customers" });
     }

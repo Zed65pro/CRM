@@ -121,6 +121,7 @@ export default {
   },
   beforeMount() {
     // Fetch existing customer details using axios on component mount
+    document.title = "CRM | Update Customer";
     this.fetchCustomerDetails();
   },
   methods: {

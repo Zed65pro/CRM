@@ -8,12 +8,12 @@ urlpatterns = [
     path('services/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
     path('customers/<int:pk>/', CustomerDetailView.as_view(), name='customer-detail'),
     path(
-        'customers/<int:pk>/remove-service/<slug:service_id>',
+        'customers/<int:pk>/remove-service/<slug:service_id>/',
         RemoveServiceFromCustomerView.as_view(),
         name='remove-service-from-customer'
     ),
     path(
-        'customers/<int:pk>/add-service/<slug:service_id>',
+        'customers/<int:pk>/add-service/<slug:service_id>/',
         AddServiceToCustomerView.as_view(),
         name='add-service-to-customer'
     ),

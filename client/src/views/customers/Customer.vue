@@ -123,6 +123,7 @@ export default {
   },
   mounted() {
     // Fetch customer details from the backend based on the route parameter
+    document.title = "CRM | Customer";
     const customerId = this.$route.params.id;
     this.fetchCustomerDetails(customerId);
   },

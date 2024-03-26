@@ -5,12 +5,11 @@
     <div class="container">
       <!-- Page Title and Add Customer Button -->
       <h1 class="mb-3">Customer List</h1>
-      <router-link :to="{ path: '/dashboard/add-customer' }">
+      <router-link :to="{ name: 'AddCustomer' }">
         <button type="button" class="btn btn-success mb-4">Add Customer</button>
       </router-link>
       <!-- Search Customers Component -->
       <SearchCustomers
-        :searchQuery="searchQuery"
         :filterType="filterType"
         @fetch-customers="fetchCustomers"
         @set-filter="setFilter"
@@ -118,6 +117,7 @@ export default {
   },
   mounted() {
     // Fetch customers on component mount
+    document.title = "CRM | Customers";
     this.fetchCustomers();
   },
   methods: {

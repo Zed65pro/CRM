@@ -110,6 +110,10 @@ export default {
       serviceDuration: "",
     };
   },
+  mounted() {
+    // Add a title to the page
+    document.title = "CRM | Add Service";
+  },
   methods: {
     async submitForm() {
       this.$store.commit("setIsLoading", true);

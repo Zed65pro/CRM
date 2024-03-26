@@ -119,6 +119,10 @@ export default {
       ],
     };
   },
+  mounted() {
+    // Add a title to the page
+    document.title = "CRM | Add Customer";
+  },
   methods: {
     async submitForm() {
       // Set a flag to indicate form submission is in progress

@@ -3,27 +3,25 @@ from django.views import View
 from django.shortcuts import get_object_or_404 # extra functionality to get_object and raise 404 error if not found
 from django.db.models import Q # for better Query support
 import json # to load post, updata bodies from frontend 
-
 from .models import Customer, Service #models
 from .serializers import CustomerSerializer, ServiceSerializer, UserSerializer  #serializers
-from django.contrib.auth.decorators import login_required # decorator to check authentication
 from django.views.decorators.csrf import csrf_exempt # to remove crsf(cross site request forgery protection) which is disadvantage but we have to do here
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
 # Custom pagination class
 class CustomPageNumberPagination:
     page_size = 6
 
 # Retrieve current user view
 class CurrentUserView(View):
-    @login_required
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            print(request.user)
+            return JsonResponse({'error': 'User not authenticated'}, status=403)
         serializer = UserSerializer(request.user)
         return JsonResponse(serializer.data)
 
 # Customer List and Create View
 class CustomerListCreateView(View):
-    @login_required
     def get(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
         search_param = request.GET.get('search', None)
@@ -46,20 +44,18 @@ class CustomerListCreateView(View):
         page = request.GET.get('page', 1)
         paginator = Paginator(queryset, CustomPageNumberPagination.page_size)
         try:
-            customers = paginator.page(page)
+            queryset = paginator.page(page)
         except PageNotAnInteger:
-            customers = paginator.page(1)
+            queryset = paginator.page(1)
         except EmptyPage:
-            customers = paginator.page(paginator.num_pages)
+            queryset = paginator.page(paginator.num_pages)
 
         serializer = CustomerSerializer(queryset,many=True)
         return JsonResponse(serializer.data)
 
-    @login_required
     @csrf_exempt
     def post(self, request, *args, **kwargs):
-        customer = json.loads(request.body)
-        serializer = CustomerSerializer(data=customer)
+        serializer = CustomerSerializer(data=request.body)
         if serializer.is_valid():
             serializer.save(created_by=request.user)
             return JsonResponse(serializer.data, status=201)
@@ -67,7 +63,6 @@ class CustomerListCreateView(View):
 
 # Customer Detail View
 class CustomerDetailView(View):
-    @login_required
     def get(self, request, *args, **kwargs):
         customer_id = kwargs.get('pk',None)
         if not customer_id:
@@ -76,21 +71,18 @@ class CustomerDetailView(View):
         serializer = CustomerSerializer(customer)
         return JsonResponse(serializer.data)
 
-    @login_required
     @csrf_exempt
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         customer_id = kwargs.get('pk',None)
         if not customer_id:
             return JsonResponse({'error': 'Customer id is required.'}, status=400)
         customer = get_object_or_404(Customer, id=customer_id)
-        data = json.loads(request.body)
-        serializer = CustomerSerializer(customer, data=data)
+        serializer = CustomerSerializer(customer, data=request.body)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
-    @login_required
     def delete(self, request, *args, **kwargs):
         customer_id = kwargs.get('pk',None)
         if not customer_id:
@@ -101,7 +93,6 @@ class CustomerDetailView(View):
 
 # Service List and Create View
 class ServiceListCreateView(View):
-    @login_required
     def get(self, request, *args, **kwargs):
         queryset = Service.objects.all()
         search_param = request.GET.get('search', None)
@@ -113,22 +104,20 @@ class ServiceListCreateView(View):
         page = request.GET.get('page', 1)
         paginator = Paginator(queryset, CustomPageNumberPagination.page_size)
         try:
-            services = paginator.page(page)
+            queryset = paginator.page(page)
         except PageNotAnInteger:
-            services = paginator.page(1)
+            queryset = paginator.page(1)
         except EmptyPage:
-            services = paginator.page(paginator.num_pages)
+            queryset = paginator.page(paginator.num_pages)
 
         serializer = ServiceSerializer(queryset,many=True)
         return JsonResponse(serializer.data)
 
-    @login_required
     @csrf_exempt
     def post(self, request, *args, **kwargs):
         if not request.user.is_staff:
             return JsonResponse({'error': 'Admin access required.'}, status=403)
-        data = json.loads(request.body)
-        serializer = ServiceSerializer(data=data)
+        serializer = ServiceSerializer(data=request.body)
         if serializer.is_valid():
             serializer.save(created_by=request.user)
             return JsonResponse(serializer.data, status=201)
@@ -136,7 +125,7 @@ class ServiceListCreateView(View):
 
 # Get all services without pagination
 class AllServicesView(View):
-    @login_required
+    @login_require
     def get(self, request, *args, **kwargs):
         services = Service.objects.all()
         serializer = ServiceSerializer(services,many=True)
@@ -144,7 +133,6 @@ class AllServicesView(View):
 
 # Service Detail View
 class ServiceDetailView(View):
-    @login_required
     def get(self, request, *args, **kwargs):
         service_id = kwargs.get('pk')
         if not service_id:
@@ -153,19 +141,16 @@ class ServiceDetailView(View):
         serializer = ServiceSerializer(service)
         return JsonResponse(serializer.data)
 
-    @login_required
     @csrf_exempt
-    def put(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         service_id = kwargs.get('pk')
         service = get_object_or_404(Service, id=service_id)
-        data = json.loads(request.body)
-        serializer = ServiceSerializer(service, data=data)
+        serializer = ServiceSerializer(service, data=request.body)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=400)
 
-    @login_required
     def delete(self, request, *args, **kwargs):
         service_id = kwargs.get('pk')
         service = get_object_or_404(Service, id=service_id)
@@ -174,7 +159,6 @@ class ServiceDetailView(View):
 
 # Remove Service From Customer View
 class RemoveServiceFromCustomerView(View):
-    @login_required
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
         customer_id = kwargs.get('customer_id')
@@ -188,7 +172,6 @@ class RemoveServiceFromCustomerView(View):
 
 # Add Service To Customer View
 class AddServiceToCustomerView(View):
-    @login_required
     @csrf_exempt
     def patch(self, request, *args, **kwargs):
         customer_id = kwargs.get('customer_id')

@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG',cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     "debug_toolbar",
-    'base'
+    'base',
+    'geo'
 ]
 
 REST_FRAMEWORK = {
@@ -63,10 +64,11 @@ REST_FRAMEWORK = {
     # and @permission_classes([IsAuthenticated]) decorators above view func for permission
 }
 
-CORS_ALLOWED_ORIGINS = [
-	"http://localhost:8080",
-]
-
+# CORS_ALLOWED_ORIGINS = [
+# 	"http://localhost:8080",
+# ]
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -105,7 +107,8 @@ WSGI_APPLICATION = 'crm.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        # 'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.contrib.gis.db.backends.mysql',
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),

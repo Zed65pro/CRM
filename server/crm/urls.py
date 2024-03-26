@@ -21,5 +21,6 @@ urlpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
     path("api/v1/", include('djoser.urls')),
     path("api/v1/", include('djoser.urls.authtoken')),
-    path('api/v1/', include('base.urls')),  # Include the service app URLs
+    path('api/v1/', include('base.urls')),
+    path('api/v1/geo', include('geo.urls')),
 ]

@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from rest_framework import status
 
 class CustomPageNumberPagination(PageNumberPagination):
     page_size = 6  # Set the desired page size
@@ -19,7 +20,6 @@ class CurrentUserView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
-
 class CustomerListCreateView(generics.ListCreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
@@ -33,7 +33,7 @@ class CustomerListCreateView(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user)
     def get_queryset(self):
         # dont use self, because it can cause infinite recursion since we are overriding the same function
-        queryset = Customer.objects.all()
+        queryset = Customer.objects.prefetch_related('services').all()
         search_param = self.request.query_params.get('search', None)
         filter_type = self.request.query_params.get('filter_type', None)
 
@@ -51,7 +51,9 @@ class CustomerListCreateView(generics.ListCreateAPIView):
             field = field_mapping.get(filter_type)
             if field:
                 queryset = queryset.filter(Q(**{field: search_param}))
-
+        elif search_param:
+            print(search_param)
+            queryset = queryset.filter(Q(first_name__icontains=search_param) | Q(last_name__icontains=search_param) | Q(phone_number__icontains=search_param) | Q(address__icontains=search_param) | Q(services__name__icontains=search_param)).distinct()
         return queryset
 
 class CustomerDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -108,7 +110,7 @@ class RemoveServiceFromCustomerView(generics.UpdateAPIView):
     queryset = Customer.objects.all()
     serializer_class = ServiceSerializer
     permission_classes = [IsAuthenticated]
-    authentication_classes = [TokenAuthentication]
+    # authentication_classes = [TokenAuthentication]
 
     def update(self, request, *args, **kwargs):
         service_id = kwargs.get('service_id', None)
