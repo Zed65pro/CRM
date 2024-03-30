@@ -139,3 +139,6 @@ class AddServiceToCustomerView(generics.UpdateAPIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Service ID not provided.'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from decouple import config
-import pymysql
+# import pymysql
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,8 +45,65 @@ INSTALLED_APPS = [
     'djoser',
     "debug_toolbar",
     'base',
-    'geo'
+    "django.contrib.gis",
+    "world",
+    'geo',
+    'leaflet',
+    'job_order'
 ]
+import os
+if os.name == 'nt':
+    import platform
+
+    OSGEO4W = r"C:\OSGeo4W"
+    assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
+    os.environ['OSGEO4W_ROOT'] = OSGEO4W
+    os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
+    os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
+    GDAL_DATA = r'C:\Program Files\GDAL\gdal-data'
+    GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal304'
+
+# LEAFLET_CONFIG  ={
+#     'SPATIAL_EXTENT': (5.0, 44.0, 7.5, 46),
+#     'DEFAULT_CENTER': (6.0, 45.0),
+#     'DEFAULT_ZOOM': 16,
+#     'MIN_ZOOM': 3,
+#     'MAX_ZOOM': 18,
+#     'DEFAULT_PRECISION': 6,
+#     'TILES': [('Satellite', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {'attribution': '&copy; Big eye', 'maxZoom': 16}),]
+# }
+DEFAULT_SRID = 3857
+LEAFLET_CONFIG = {
+    'SRID': DEFAULT_SRID,
+    'DEFAULT_CENTER': (31.8970, 35.2112),
+    'DEFAULT_ZOOM': 10,
+    'MAX_ZOOM': 20,
+    'MIN_ZOOM': 5,
+    # 'SPATIAL_EXTENT': (31.0, 29.0, 38.0, 34.0),
+    'TILES': [(('Default'), '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '© <a href="https://mada.ps">Mada</a>')],
+    'OVERLAYS': [
+        (('Satellite'), 'https://postcode.palestine.ps/TilesDir/{z}/{x}/{y}.png', '© <a href="https://mada.ps">Mada</a>'),
+        (('Satellite 2'), 'https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe:ImageryTileService@EPSG:3857@jpg/{z}/{x}/{-y}.jpg?connectId=fa014fbc-6cbe-4b6f-b0ca-fbfb8d1e5b7d&foo=premium', '© <a href="https://mada.ps">Mada</a>'),
+        (('Arcgis'), 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '© <a href="https://mada.ps">Mada</a>'),
+        (('google street'), 'https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']}),
+        (('google Hybrid'), 'https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']}),
+        (('google sat'), 'https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']}),
+        (('google terrain'), 'https://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {'subdomains': ['mt0', 'mt1', 'mt2', 'mt3']}),
+        (('Map Quest Imagery'), 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png?api_key=c810f252-c3fb-49bc-807e-c6c4568e021e', '© <a href="https://mada.ps">Mada</a>'),
+
+    ],
+    'FORCE_IMAGE_PATH': True,
+    'PLUGINS': {
+        'forms': {
+            'auto-include': True
+        },
+        'geocoder': {
+            'css': ['static/leaflet/Control.Geocoder.css'],
+            'js': ['static/leaflet/Control.Geocoder.js'],
+        }
+    }
+}    
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -155,7 +212,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'),]
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
@@ -170,5 +227,5 @@ INTERNAL_IPS = [
 
 # Fake PyMySQL's version and install as MySQLdb
 # https://adamj.eu/tech/2020/02/04/how-to-use-pymysql-with-django/
-pymysql.version_info = (1, 4, 2, "final", 0)
-pymysql.install_as_MySQLdb()
+# pymysql.version_info = (1, 4, 2, "final", 0)
+# pymysql.install_as_MySQLdb()
