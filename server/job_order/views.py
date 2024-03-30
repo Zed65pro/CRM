@@ -5,6 +5,7 @@ from .serializers import JobOrderImageSerializer, JobOrderSerializer
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
+from django.shortcuts import get_object_or_404
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -43,13 +44,10 @@ class JobOrderImageCreateAPIView(generics.CreateAPIView):
     def post(self, request, *args, **kwargs):
         # Ensure job order exists
         job_order_id = request.data.get('job_order')
-        try:
-            job_order = JobOrder.objects.get(id=job_order_id)
-        except JobOrder.DoesNotExist:
-            return Response({'error': 'Job order does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        job_order = get_object_or_404(JobOrder, pk=job_order_id)
 
         # Save file
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(uploaded_by=self.request.user)
+        serializer.save(job_order=job_order, uploaded_by=self.request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
