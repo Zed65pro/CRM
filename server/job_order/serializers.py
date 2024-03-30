@@ -12,6 +12,8 @@ class JobOrderSerializer(serializers.ModelSerializer):
 
 class JobOrderImageSerializer(serializers.ModelSerializer):
     uploaded_by = UserSerializer(read_only=True)
+    job_order = JobOrderSerializer(read_only=True)
+
     class Meta:
         model = JobOrderImage
         fields = ['__all__']

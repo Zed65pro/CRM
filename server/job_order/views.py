@@ -43,7 +43,7 @@ class JobOrderImageCreateAPIView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # Ensure job order exists
-        job_order_id = request.data.get('job_order')
+        job_order_id = self.kwargs.get('jobId')
         job_order = get_object_or_404(JobOrder, pk=job_order_id)
 
         # Save file
