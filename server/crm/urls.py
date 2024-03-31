@@ -22,6 +22,6 @@ urlpatterns = [
     path("api/v1/", include('djoser.urls')),
     path("api/v1/", include('djoser.urls.authtoken')),
     path('api/v1/', include('base.urls')),
-    path('api/v1/job_orders/', include('job_order.urls')),
+    path('api/v1/joborders/', include('job_order.urls')),
     # path('api/v1/geo', include('geo.urls')),
 ]

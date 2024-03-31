@@ -1,11 +1,12 @@
 from rest_framework.response import Response
 from rest_framework import generics,status
-from .models import JobOrder
+from .models import JobOrder,JobOrderImage
 from .serializers import JobOrderImageSerializer, JobOrderSerializer
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 
 class CustomPageNumberPagination(PageNumberPagination):
@@ -25,6 +26,20 @@ class JobOrderListCreateView(generics.ListCreateAPIView):
         
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
+    
+    def get_queryset(self):
+        queryset = JobOrder.objects.all()
+        search_param = self.request.query_params.get('search', None)
+
+        print(search_param)
+        if search_param:
+            # Use Q objects to perform case-insensitive search on name and description
+            queryset = queryset.filter(
+                Q(name__icontains=search_param)
+            )
+        print(queryset)
+        queryset = queryset.prefetch_related('images')
+        return queryset
 
 class JobOrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = JobOrder.objects.all()
@@ -38,16 +53,13 @@ class JobOrderRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return [IsAuthenticated()]
 
-class JobOrderImageCreateAPIView(generics.CreateAPIView):
+class JobOrderImageCreateAPIView(generics.ListCreateAPIView):
+    queryset = JobOrderImage.objects.all()
     serializer_class = JobOrderImageSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
 
-    def post(self, request, *args, **kwargs):
-        # Ensure job order exists
+    def perform_create(self,serializer):
         job_order_id = self.kwargs.get('jobId')
         job_order = get_object_or_404(JobOrder, pk=job_order_id)
-
-        # Save file
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
         serializer.save(job_order=job_order, uploaded_by=self.request.user)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)

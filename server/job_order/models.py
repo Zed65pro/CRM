@@ -34,10 +34,11 @@ class JobOrder(models.Model):
 class JobOrderImage(models.Model):
     job_order = models.ForeignKey(JobOrder, related_name='images', on_delete=models.CASCADE)
     file = models.FileField(upload_to='media/job_order_files/')
-    uploaded_at = models.DateTimeField(auto_now_add=True)
     created_at = models.DateTimeField(auto_now_add=True)
     uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
         return self.file.name
